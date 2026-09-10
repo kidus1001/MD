@@ -2,9 +2,10 @@ const express = require("express"); //express is a web framework for Node.js tha
 const router = express.Router(); //Router is a middleware that allows us to create routes for our application.
 const jwt = require("jsonwebtoken"); //jsonwebtoken is a library that allows us to create and verify JSON Web Tokens (JWTs) for authentication and authorization.
 const User = require("../Models/userModel"); //User is a model that represents the user collection in the database.
+const protect = require("../Middleware/auth"); //protect is a middleware that protects routes from unauthorized access by verifying the JWT token.
 
 
-router.post ('/register', async (requestAnimationFrame, res) => {
+router.post ('/register', async (req, res) => {
     try {
         const {name,email,password} = req.body; //Get the name, email and password from the request body
 
@@ -66,9 +67,16 @@ router.post ('/login', async (req, res) => {
             })
         }
 
-        const user = await User.findOne({email}); //Check if the user exists in the database
+        const user = await User.findOne({email}).select('+password'); //Check if the user exists in the database
 
         if (!user) {
+            return res.status(400).json ({
+                success: false,
+                message: "Invalid credentials",
+            });
+        }
+
+        if (!await user.comparePassword(password, user.password)) { //Check if the password is correct
             return res.status(400).json ({
                 success: false,
                 message: "Invalid credentials",
@@ -103,21 +111,17 @@ router.post ('/login', async (req, res) => {
 
 
 
-router.get ('/profile', async (req, res) => {
-    try {
-        const user = await User.findById(req.User._id).select('-password'); //Find the user in the database using the id from the token and select all fields except the password
-        res.json ({
-            success: true,
-            user,
-        })
-    } catch (error) {
-        console.error(error);
-        res.status(500).json ({
-            success: false,
-            message: "Server error",
-            error: error.message,
-        });
-    }
+router.get ('/profile', protect, async (req, res) => {
+    res.status(200).json ({
+        success: true,
+        message: "User profile fetched successfully",
+        user: {
+            id: req.User._id,
+            name: req.User.name,
+            email: req.User.email,
+            createdAt: req.User.createdAt,
+        }
+    });
 });
 
 module.exports = router; //Export the router to be used in other files

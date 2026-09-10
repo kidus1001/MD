@@ -36,7 +36,6 @@ UserSchema.pre ('save', async function (next) { //this is a pre-save hook that i
     }
     const salt = await bcrypt.genSalt(10); //this is used to generate a salt for the password. A salt is a random string that is added to the password before hashing it. This is used to make it more difficult for attackers to crack the password using rainbow tables.
     this.password = await bcrypt.hash(this.password, salt);
-    next();
 });
 
 
