@@ -1,8 +1,8 @@
-import useState from "react";
-import authAPI from "../api";
+import { useState } from "react";
+import { authAPI } from "../api";
 
 function Register() {
-    consy [form, setForm] = useState({
+    const [form, setForm] = useState({
         name: "",
         email: "",
         password: "",

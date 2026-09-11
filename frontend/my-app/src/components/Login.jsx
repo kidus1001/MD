@@ -1,5 +1,5 @@
 import { useState } from "react";
-import authAPI from "../api";
+import { authAPI } from "../api";
 
 function Login ({onLogin}) { //onlogin here is a prop that is passed from the parent component (App.jsx) to the child component (Login.jsx). It is a function that is called when the user successfully logs in. It is used to update the state of the parent component (App.jsx) with the user data and token.
     const [form, setForm] = useState ({email: "", password: ""});
