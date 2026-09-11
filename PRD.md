@@ -30,4 +30,205 @@
 - Publishing / sharing publicly
 - Multi-language UI (*V1 will be English only UI*)
 
-6. 
+6. **Core Features**
+* Lyric Editor
+    - Rich text or plain textr editor
+    - Fields for: title, lyric body, poem contributors, melody contributors, sung by, scale/ major, notes
+    - Autosave every few seconds.
+* Project Organization
+    - Create folders (Projects / albums)
+    - Different versions of the melodies can be saved inside a given file
+    - Built-in starter templates (*Single*, *Album Project*)
+* Progress Tracker
+    - Status per file. Idea -> Draft -> Composed -> Rehearsed -> Recorded -> Released.
+    - User can fill in the percent - on how much satisfied and finished the file is.
+    - And for the whole albums' percent, it will calculate the individual percents and take an average on how much done ***by percent*** the given project is.
+* Scale / Major log
+    - Drop down of common Ethiopian scales (Tizita, Selamta, Anchihoye, Ambassel) and custom.
+    - Dropdown of the major. (C, C#, D, D#, E, F, F#, G, G#, A, A#, B, C)
+    - Can switch whether someone wants to see **#** or **b**. As a profile settings. But by default - it will be in ***#***.
+* Search and Filter
+    - Search by keyword (title, lyric body)
+    - Filter by: poem by, melody by, scale, project, status, major
+* User Account
+    - Register / login
+    - Profile: name, email, preferences
+
+7. **User Stories**
+    - As a lyricist, I want to write lyrics with credits, so that I don't forget including their credits.
+    - As a musician, I want to organize songs into album folders, so that I can find everything in one place.
+    - As a musician, I want to just get my poems directly by searching them in a browser, so that I don't hustle when called for a performance.
+    - As a performer, I want to log the scale (major) of each song, so that I remember how I played it last time.
+    - As a composer, I want to see the progress status of each song, so that I know what still needs work.
+    - As a user, I want to search by scale or contributor, so that I can quickly find related songs.
+
+8. User Flow (*High Level*)
+    - Open App
+    - [First time?] -> Register -> Dashboard (empty state)
+    - Dashboard -> [ + New Project ] or [ + New Song ]
+    - Fill song form (title, lyric, credits, scale, status) + Playlist (Dropdown) - [First time?] - Untitled, +
+    - Add melody, recording of the song as well. You can add as many (as you keep on refining them)
+    - Save -> Song appears in a project folder if specified or "Untitled Folder"
+    - Search / Filter -> Find song by scale, contributor, by single date, range of dates or keyword (a word in lyric, any word)
+
+9. Design Principles
+    - Musician-first - terminology matches how musicians actually speak. (Poem by, melody by, Scale)
+    - Fast entry - Saving a song must be quick
+    - Visual clarity - Status and scale are visible at a glance
+    - Amharic-friendly - Full support for Ethiopic script input and display
+    - Minimal - No feature bloat, V1 does one thing very well, and has got audio saving feature, which will be refined in the future versions.
+
+
+## Technical Architecture
+1. **High-Level Flow**
+    - User opens web app
+    - Logs in (JWT auth)
+    - Creates project / song
+    - Data stored in MongoDB
+    - Search index updated (for keyword search)
+    - Dashboard, folders, search reflect new data
+
+2. **Tech Stack**
+    - Frontend - React
+    - Styling - tailwind CSS
+    - Backend - Node.js + Express
+    - Database - MongoDB
+    - Search - Meilisearch (New to learn)
+    - Hosting - A real domain. That I will also use in the future for my portfolio
+    - Audio storage - Supabase Storage (Free tier + something to learn)
+
+3. **Data Models**
+```
+User {
+    id: UUID
+    name: string
+    email: string
+    password_hash: string
+    preferences: {
+        accidental: enum("sharp", "flat")
+        theme: enum("light", "dark")
+    }
+    created_at: timestamp
+}
+
+Project {
+    id: UUID
+    user_id: UUID
+    title: string
+    type: enum ("Album", "Single", "Untitled")
+    description: string
+    percent: number
+    song_count: number
+    created_at: timestamp
+    updated_at: timestamp
+}
+
+Song {
+    id: UUID
+    user_id: UUID
+    project_id: UUID
+    title: string
+    lyric_body: text
+    poem_by: string
+    melody_by: string
+    sung_by: string
+    scale: string //Tizita, Selamta, Anchihoye etc...
+    major: string //C, C#, D, . . .
+    status: enum ("idea", "draft", "composed", "rehearsed", "recorded", "released")
+    percent: number
+    notes: text
+    created_at: timestamp
+    updated_at: timestamp
+}
+
+Recording {
+    id: UUID
+    song_id: UUID
+    user_id: UUID
+    title: strng
+    file_url: string
+    file_size: number //bytes
+    duration: number //minutes / second
+    mime_type: string
+    version: number //Auto-incremented (1,2,3 . . . )
+    notes: text
+    created_at: timestamp
+}
+
+Tag {
+    id: UUID
+    user_id: UUID
+    name: string
+}
+
+SongTag {
+    song_id: UUID
+    tag_id: UUID
+}
+```
+
+4. **API Endpoints (*Sketch*)**
+    -   ***Auth***
+        *   POST /api/auth/register -> Create Account
+        *   POST /api/auth/login -> Get JWT
+        *   POST /api/auth/refresh -> Refresh access token
+        *   POST /api/auth/logout -> Invalidate refresh
+        *   GET /api/auth/profile -> Current User
+        *   PUT /api/auth/profile -> Update name/email/preferences (***#*** or ***b***)
+        *   POST /api/auth/forgot-password
+        *   POST /api/auth/reset-password/:token
+
+    -   ***Projects***
+        *   GET /api/projects -> List user's projects
+        *   POST /api/projects -> Create project
+        *   GET /api/projects/:id -> Project detail + songs
+        *   PUT /api/projects/:id -> Update
+        *   DELETE /api/projects/:id -> Delete
+        *   GET /api/projects/:id/stats -> Project percent + song count breakdown
+        *   GET /api/projects/:id/export?format=pdf
+    
+    -   ***Songs***
+        *   GET /api/songs?page=1&limit=20 -> List (filters: scale, status, project), Pagination when a user has lets say 500+ songs.
+        *   POST /api/songs -> Create song
+        *   GET /api/songs/:id -> Song detail
+        *   PUT /api/songs/:id -> Update
+        *   DELETE /api/songs/:id -> Delete
+        *   GET /api/songs?scale=&major=&status=&project_id=&tag=&q=
+        *   GET /api/songs?sort=title&order=asc
+        *   GET /api/songs?sort=updated_at&order=desc
+        *   GET /api/songs/:id/export?format=pdf
+
+    -   ***Recordings***
+        *   POST /api/songs/:id/recordings -> Upload audio file
+        *   GET /api/songs/:id/recordings -> List recordings for a song
+        *   GET /api/recordings/:recordingId -> Get one
+        *   DELETE /api/recordings/:recordingId -> Delete recording
+        *   PUT /api/recordings/:recordingId -> Update metadata (title, notes)
+
+        - Constraints: Max 50MB per file. Allowed: mp3, wav, m4a, ogg. Max 20 recordings per song.
+    
+    -   ***Tag***
+        *   GET /api/tags -> List user's tags
+        *   POST /api/tags -> Create tag
+        *   DELETE /api/tags/:id -> Delete tag
+        *   POST /api/songs/:id/tags -> Add tag to a song
+        *   DELETE /api/songs/:id/tags/:tagId -> Remove tag from a song
+
+    -   ***Search***
+        *   GET /api/songs?q=&scale=&poem_by=&melody_by=&project_id=
+
+    -   ***Scales (Reference)***
+        * GET /api/scales -> List available scales
+
+    -   ***Export everything***
+        *   GET /api/export?format=pdf
+
+5. Users should be able to export folder or projects and songs to PDF.
+
+
+
+**NB:**
+*   Rate Limit by IP Address (especially /auth/login, /auth/register: max 5 attempts/min)
+*   Max upload size: 50MB per recording
+*   Pagination default: 20 items per page (max 100)
+
