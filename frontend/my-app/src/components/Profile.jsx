@@ -8,7 +8,7 @@ function Profile () {
     useEffect (() => {
         const fetchProfile = async () => {
             try {
-                const data = await authAPI.getProfile();
+                const data = await authAPI.Profile();
                 setUser(data.user);
             } catch (error) {
                 setError(error.message);

@@ -15,7 +15,7 @@ function Login ({onLogin}) { //onlogin here is a prop that is passed from the pa
         setLoading(true);
         setMessage("");
         try {
-            const data = await authAPI.login(form);
+            const data = await authAPI.Login(form);
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
             setMessage("User Logged In Successfully");

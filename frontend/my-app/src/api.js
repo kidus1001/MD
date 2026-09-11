@@ -28,15 +28,15 @@ const request = async (endpoint, options = {}) => {
 
 
 export const authAPI = {
-    register: (userData) => request("/register", {
+    Register: (userData) => request("/register", {
         method: "POST",
         body: JSON.stringify(userData),
     }),
-    login: (userData) => request("/login", {
+    Login: (userData) => request("/login", {
         method: "POST",
         body: JSON.stringify(userData),
     }),
-    getProfile: () => request("/profile", {
+    Profile: () => request("/profile", {
         method: "GET",
     }),
 }
