@@ -1,6 +1,6 @@
-const mongoose = require ('mongoose');
+import mongoose from 'mongoose';
 
-const connectDB = async () => {
+export default async function connectDB () {
     try {
         const conn = await mongoose.connect(process.env.MongoDB_URI);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
@@ -10,5 +10,3 @@ const connectDB = async () => {
                          //0 -> App closed successfully on purpose
     }
 };
-
-module.exports = connectDB; //To expose the function to the rest of the project. So that it can be used in other files.
