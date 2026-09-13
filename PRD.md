@@ -231,4 +231,3 @@ SongTag {
 *   Rate Limit by IP Address (especially /auth/login, /auth/register: max 5 attempts/min)
 *   Max upload size: 50MB per recording
 *   Pagination default: 20 items per page (max 100)
-
