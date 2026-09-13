@@ -2,6 +2,7 @@ import sendVerificationEmail from '../Services/email.js';
 import User from '../Models/userModel.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 export async function register(req, res) {
   try {
@@ -98,7 +99,7 @@ export async function login(req, res) {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password_hash');
 
     if (!user) {
       return res.status(400).json({

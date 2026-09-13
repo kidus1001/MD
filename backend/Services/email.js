@@ -10,7 +10,7 @@ export default async function sendverificationEmail (to, name, token) {
         to,
         subject: 'Verify your email address',
         html: `
-            <h1>Hello ${name}</h2>
+            <h1>Hello ${name}</h1>
             <p>Click the link below to verify your email address.</p>
             <>href="${verifyURL}"</a>
             <p>This link expires in 2 hours.</p>
@@ -21,6 +21,5 @@ export default async function sendverificationEmail (to, name, token) {
         console.error ('Resend error:', error);
         throw new Error ('Failed to send verification email');
     }
-
     return data;
 }

@@ -35,15 +35,14 @@ const UserSchema = new mongoose.Schema ({
 
 UserSchema.pre ('save', async function (next) { //this is a pre-save hook that is called before saving a user to the database. It is used to hash the password before saving it to the database.
     if (!this.isModified('password_hash')) { //this is used to check if the password has been modified. If it has not been modified, we do not need to hash it again. So this is how it works: if the password has not been modified, we call the next() function to move on to the next middleware. If the password has been modified, we hash it using bcrypt and then call the next() function.
-        ReadableStreamDefaultController;
+        return;
     }
-    const salt = await bcrypt.genSalt(10); //this is used to generate a salt for the password. A salt is a random string that is added to the password before hashing it. This is used to make it more difficult for attackers to crack the password using rainbow tables.
-    this.password_hash = await bcrypt.hash(this.password_hash, salt);
+    this.password_hash = await bcrypt.hash(this.password_hash, 10);
 });
 
 
 UserSchema.methods.comparePassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password); //Returns true if the entered password matches the hashed password stored in the database, otherwise returns false.
+    return await bcrypt.compare(enteredPassword, this.password_hash); //Returns true if the entered password matches the hashed password stored in the database, otherwise returns false.
 };
 
 export default mongoose.model ('User', UserSchema);
