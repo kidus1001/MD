@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import connectDB from './Config/db.js';
 import authRoute from './Routes/authRoute.js';
+import projectRoute from "./Routes/projectRoute.js"
 // import authRoute from './Routes/authRoute.js';
 
 // const express = require("express");
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true })); //This middleware is used to pa
 
 
 app.use('/api/auth', authRoute);
+app.use ('', projectRoute);
 
 app.get ('/', (req, res) => {
     res.send("API is running...");
