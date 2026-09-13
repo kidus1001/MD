@@ -45,14 +45,3 @@ const ProjectSchema = new mongoose.Schema ({
 
 
 export default mongoose.model ('Project', ProjectSchema);
-// Project {
-//     id: UUID
-//     user_id: UUID
-//     title: string
-//     type: enum ("Album", "Single", "Untitled")
-//     description: string
-//     percent: number
-//     song_count: number
-//     created_at: timestamp
-//     updated_at: timestamp
-// }

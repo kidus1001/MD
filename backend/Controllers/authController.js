@@ -2,7 +2,6 @@ import sendVerificationEmail from '../Services/email.js';
 import User from '../Models/userModel.js';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 
 export async function register(req, res) {
   try {
