@@ -25,7 +25,8 @@ const SongSchema = new mongoose.Schema ({
     poem_by: {
         name: {
             type: String,
-            required: true,
+            required: false,
+            default: ""
         },
         honorific_title: {
             type: String,
@@ -36,7 +37,8 @@ const SongSchema = new mongoose.Schema ({
     melody_by: {
         name: {
             type: String,
-            required: true,
+            required: false,
+            default: ""
         },
         honorific_title: {
             type: String,
@@ -47,7 +49,8 @@ const SongSchema = new mongoose.Schema ({
     sung_by: {
         name: {
             type: String,
-            required: true,
+            required: false,
+            default: "",
         },
         honorific_title: {
             type: String,
