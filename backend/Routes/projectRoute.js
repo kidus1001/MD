@@ -4,10 +4,10 @@ import protect from "../Middleware/auth.js"; //protect is a middleware that prot
 
 const router = express.Router(); //Router is a middleware that allows us to create routes for our application.
 
-router.get('/projects', protect, FetchProjects);
-router.post ('/projects', protect, CreateProject);
-router.get('/projects:id', protect, fetchProject);
-router.put ('/projects:id', protect, UpdateProject);
-router.delete ('projects:id', protect, DeleteProject);
+router.get('/', protect, FetchProjects);
+router.post ('/', protect, CreateProject);
+router.get('/:id', protect, fetchProject);
+router.put ('/:id', protect, UpdateProject);
+router.delete ('/:id', protect, DeleteProject);
 
 export default router; //Export the router to be used in other files

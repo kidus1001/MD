@@ -23,7 +23,7 @@ export async function FetchProjects (req, res) {
 
 export async function CreateProject (req, res) {
     try {
-        const { title, type, description } = req.body;
+        const { title, type, description, percent } = req.body;
         
         if (!title || !type ) {
             res.status (400).json ({message: "Please provide title and type"});
@@ -42,7 +42,7 @@ export async function CreateProject (req, res) {
             user_id: req.user._id,
             title: title,
             type: type,
-            percent: 0,
+            percent: percent || 0,
             description: description,
             song_count: 0 
         })

@@ -10,7 +10,6 @@ const ProjectSchema = new mongoose.Schema ({
     title: {
         type: String,
         required: [ true, "Please add a title" ],
-        unique: true,
         trim: true,
     },
     type: {

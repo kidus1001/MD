@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true })); //This middleware is used to pa
 
 
 app.use('/api/auth', authRoute);
-app.use ('', projectRoute);
+app.use ('/api/projects', projectRoute);
 
 app.get ('/', (req, res) => {
     res.send("API is running...");
