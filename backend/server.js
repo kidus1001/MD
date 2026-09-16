@@ -28,6 +28,26 @@ app.use("/api/projects", projectRoute);
 app.use("/api/songs", songRoute);
 app.use("/api", recordingRoute);
 
+app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      success: false,
+      message: "File too large (max 50MB)",
+    });
+  }
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({
+      success: false,
+      message: `Unexpected file field. Use "audio".`,
+    });
+  }
+  if (err.message === "Only mp3, wav, m4a, ogg allowed") {
+    return res.status(400).json({ success: false, message: err.message });
+  }
+  console.error("Unhandled error:", err);
+  res.status(500).json({ success: false, message: "Server error" });
+});
+
 app.get("/", (req, res) => {
   res.send("API is running...");
 });

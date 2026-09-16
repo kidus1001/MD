@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import Song from "../Models/songModel.js";
 import Recording from "../Models/recordingModel.js";
 
+import crypto from "crypto";
+import { supabase, BUCKET } from "../Config/supabase.js";
+
 export async function AllRecordings(req, res) {
   try {
     const { id } = req.params;
@@ -115,6 +118,22 @@ export async function CreateRecording(req, res) {
       });
     }
 
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Please attach an audio file",
+        success: false,
+      });
+    }
+
+    const { title, notes, duration } = req.body;
+
+    if (!title) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a title",
+      });
+    }
+
     const highest = await Recording.findOne({
       song_id: id,
       user_id: req.user._id,
@@ -124,14 +143,29 @@ export async function CreateRecording(req, res) {
 
     const nextVersion = (highest?.version || 0) + 1;
 
-    const { title, notes, duration, mime_type, file_size, file_url } = req.body; //file_url - maybe the hardest part from this controller. For now we will accept it from req.body
+    const ext = (req.file.originalname.split(".").pop() || "mp3").toLowerCase();
+    const filename = `${req.user._id}/${id}/${Date.now()}-${crypto.randomUUID}.${ext}`;
 
-    if (!title) {
-      return res.status(400).json({
+    const { error: uploadError } = await supabase.storage
+      .from(BUCKET)
+      .upload(filename, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("Supabase upload error:", uploadError);
+      return res.status(500).json({
         success: false,
-        message: "Please provide a title",
+        message: "File upload failed",
       });
     }
+
+    const { data: urlData } = supabase.storage
+      .from(BUCKET)
+      .getPublicUrl(filename);
+
+    // const { mime_type, file_size, file_url } = req.body; //file_url - maybe the hardest part from this controller. For now we will accept it from req.body
 
     const newRecording = await Recording.create({
       song_id: id,
@@ -140,9 +174,9 @@ export async function CreateRecording(req, res) {
       version: nextVersion,
       notes,
       duration,
-      mime_type,
-      file_size,
-      file_url,
+      mime_type: req.file.mimetype,
+      file_size: req.file.size,
+      file_url: urlData.publicUrl,
     });
 
     return res.status(201).json({
@@ -158,7 +192,7 @@ export async function CreateRecording(req, res) {
       });
     }
     return res.status(500).json({
-      message: "create recording error",
+      message: "Create recording error",
       success: false,
     });
   }
