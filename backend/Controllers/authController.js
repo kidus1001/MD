@@ -1,7 +1,7 @@
-import sendVerificationEmail from '../Services/email.js';
-import User from '../Models/userModel.js';
-import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
+import sendVerificationEmail from "../Services/email.js";
+import User from "../Models/userModel.js";
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 export async function register(req, res) {
   try {
@@ -10,7 +10,7 @@ export async function register(req, res) {
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide name, email and password',
+        message: "Please provide name, email and password",
       });
     }
 
@@ -18,28 +18,29 @@ export async function register(req, res) {
     if (userExists) {
       return res.status(400).json({
         success: false,
-        message: 'Email already in use',
+        message: "Email already in use",
       });
     }
 
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationToken = crypto.randomBytes(32).toString("hex");
     const verificationExpires = new Date(Date.now() + 2 * 60 * 60 * 1000);
 
     const user = await User.create({
       name,
       email,
-      password_hash: password,           // raw — the model's pre-save hook hashes it
+      password_hash: password, // raw — the model's pre-save hook hashes it
       email_verified: false,
       verification_token: verificationToken,
       verification_expires: verificationExpires,
     });
 
-    sendVerificationEmail(user.email, user.name, verificationToken)
-      .catch(err => console.error('Verification email failed:', err));
+    sendVerificationEmail(user.email, user.name, verificationToken).catch(
+      (err) => console.error("Verification email failed:", err),
+    );
 
     return res.status(201).json({
       success: true,
-      message: 'Account created. Please check your email to verify.',
+      message: "Account created. Please check your email to verify.",
       user: {
         id: user._id,
         name: user.name,
@@ -48,10 +49,10 @@ export async function register(req, res) {
       },
     });
   } catch (err) {
-    console.error('Register error:', err);
+    console.error("Register error:", err);
     return res.status(500).json({
       success: false,
-      message: 'Something went wrong',
+      message: "Something went wrong",
     });
   }
 }
@@ -60,7 +61,7 @@ export async function verifyEmail(req, res) {
   try {
     const { token } = req.query;
     if (!token) {
-      return res.status(400).json({ success: false, message: 'Token missing' });
+      return res.status(400).json({ success: false, message: "Token missing" });
     }
 
     const user = await User.findOne({
@@ -71,7 +72,7 @@ export async function verifyEmail(req, res) {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid or expired token',
+        message: "Invalid or expired token",
       });
     }
 
@@ -80,10 +81,12 @@ export async function verifyEmail(req, res) {
     user.verification_expires = null;
     await user.save();
 
-    return res.json({ success: true, message: 'Email verified' });
+    return res.json({ success: true, message: "Email verified" });
   } catch (err) {
-    console.error('Verify email error:', err);
-    return res.status(500).json({ success: false, message: 'Something went wrong' });
+    console.error("Verify email error:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Something went wrong" });
   }
 }
 
@@ -94,16 +97,16 @@ export async function login(req, res) {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide email and password',
+        message: "Please provide email and password",
       });
     }
 
-    const user = await User.findOne({ email }).select('+password_hash');
+    const user = await User.findOne({ email }).select("+password_hash");
 
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid credentials',
+        message: "Invalid credentials",
       });
     }
 
@@ -111,26 +114,26 @@ export async function login(req, res) {
     if (!isMatch) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid credentials',
+        message: "Invalid credentials",
       });
     }
 
     if (!user.email_verified) {
       return res.status(403).json({
         success: false,
-        message: 'Please verify your email before logging in',
+        message: "Please verify your email before logging in",
       });
     }
 
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: '3d' }
+      { expiresIn: "3d" },
     );
 
     return res.status(200).json({
       success: true,
-      message: 'User logged in successfully',
+      message: "User logged in successfully",
       token,
       user: {
         id: user._id,
@@ -140,15 +143,15 @@ export async function login(req, res) {
       },
     });
   } catch (error) {
-    console.error('Login error:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Login error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 }
 
 export async function getProfile(req, res) {
   return res.status(200).json({
     success: true,
-    message: 'User profile fetched successfully',
+    message: "User profile fetched successfully",
     user: {
       id: req.user._id,
       name: req.user.name,

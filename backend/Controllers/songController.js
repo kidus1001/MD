@@ -1,5 +1,5 @@
-import Song from "../Models/songModel";
-import Recording from "../Models/recordingModel";
+import Song from "../Models/songModel.js";
+import Recording from "../Models/recordingModel.js";
 import mongoose from "mongoose";
 
 export async function AllSongs(req, res) {
@@ -72,7 +72,7 @@ export async function CreateSong(req, res) {
       });
     }
 
-    const Song = await Song.Create({
+    const song = await Song.create({
       user_id: req.user._id,
       title,
       lyric_body,
@@ -89,7 +89,7 @@ export async function CreateSong(req, res) {
     return res.status(201).json({
       success: true,
       message: "Song created",
-      Song,
+      song,
     });
   } catch (err) {
     console.log("Error: ", err);

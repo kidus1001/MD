@@ -4,7 +4,7 @@ import {
   CreateRecording,
   UpdateRecording,
   DeleteRecording,
-} from "../Controllers/recordingController";
+} from "../Controllers/recordingController.js";
 
 import express from "express";
 import protect from "../Middleware/auth.js";

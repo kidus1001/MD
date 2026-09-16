@@ -144,7 +144,7 @@ export async function CreateRecording(req, res) {
     const nextVersion = (highest?.version || 0) + 1;
 
     const ext = (req.file.originalname.split(".").pop() || "mp3").toLowerCase();
-    const filename = `${req.user._id}/${id}/${Date.now()}-${crypto.randomUUID}.${ext}`;
+    const filename = `${req.user._id}/${id}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from(BUCKET)
