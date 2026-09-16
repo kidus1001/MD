@@ -156,9 +156,70 @@ export async function Create(req, res) {
 }
 
 export async function UpdateRecording(req, res) {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
+    const { title, notes } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid ID",
+        success: false,
+      });
+    }
+
+    const recording = Recording.findOne({
+      _id: id,
+      user_id: req.user._id,
+    });
+
+    if (!recording) {
+      return res.status(400).json({
+        message: "No recording found",
+        success: false,
+      });
+    }
+
+    if (title !== undefined) recording.title = title;
+    if (notes !== undefined) recording.notes = notes;
+  } catch (err) {
+    console.log("Server error", err);
+    return res.status(500).json({
+      message: "internal server error",
+      success: false,
+    });
+  }
 }
 
 export async function DeleteRecording(req, res) {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Invalid ID",
+        success: false,
+      });
+    }
+
+    const deletedRec = Recording.findOneAndDelete({
+      _id: id,
+      user_id: req.user._id,
+    });
+
+    if (!deletedRec) {
+      return res.status(404).json({
+        message: "Recording not found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Recording deleted successfully",
+      success: true,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "internal server error",
+      success: false,
+    });
+  }
 }
