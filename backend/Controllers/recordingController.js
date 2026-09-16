@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Song from "../Models/songModel";
-import Recording from "../Models/recordingModel";
+import Song from "../Models/songModel.js";
+import Recording from "../Models/recordingModel.js";
 
 export async function AllRecordings(req, res) {
   try {
@@ -12,9 +12,9 @@ export async function AllRecordings(req, res) {
       });
     }
 
-    const SongExists = Song.findOne({
+    const SongExists = await Song.findOne({
       _id: id,
-      user: req.user._id,
+      user_id: req.user._id,
     });
 
     if (!SongExists) {
@@ -24,23 +24,23 @@ export async function AllRecordings(req, res) {
       });
     }
 
-    const res = Recording.find({
+    const recordings = await Recording.find({
       song_id: id,
-      user_id: req.user_.id,
+      user_id: req.user._id,
     })
       .sort({
         version: 1,
       })
       .lean();
 
-    return recordings.status(200).json({
+    return res.status(200).json({
       message: "Successful",
       success: true,
       recordings,
     });
   } catch (err) {
     return res.status(500).json({
-      message: "Server error",
+      message: "All recordings error",
       success: false,
     });
   }
@@ -56,7 +56,7 @@ export async function OneRecording(req, res) {
       });
     }
 
-    const recordingOne = Recording.findOne({
+    const recordingOne = await Recording.findOne({
       _id: id,
       user_id: req.user._id,
     });
@@ -81,19 +81,19 @@ export async function OneRecording(req, res) {
   }
 }
 
-export async function Create(req, res) {
+export async function CreateRecording(req, res) {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({
+      return res.status(400).json({
         message: "Invalid ID",
         success: false,
       });
     }
 
-    const SongExists = Song.findOne({
+    const SongExists = await Song.findOne({
       _id: id,
-      user: req.user._id,
+      user_id: req.user._id,
     });
 
     if (!SongExists) {
@@ -103,40 +103,49 @@ export async function Create(req, res) {
       });
     }
 
-    const recordingCount = await Recording.countDocument({
+    const recordingCount = await Recording.countDocuments({
       song_id: id,
       user_id: req.user._id,
     });
 
-    if (recordingCount > 20) {
+    if (recordingCount >= 20) {
       return res.status(400).json({
         message: "Number of recordings exceeded 20",
         success: false,
       });
     }
 
-    const nextVersion = await Recording.findOne({
-      created_at: -1,
-    });
+    const highest = await Recording.findOne({
+      song_id: id,
+      user_id: req.user._id,
+    })
+      .sort({ version: -1 })
+      .select("version");
 
-    nextVersion = nextVersion.version + 1;
+    const nextVersion = (highest?.version || 0) + 1;
+
     const { title, notes, duration, mime_type, file_size, file_url } = req.body; //file_url - maybe the hardest part from this controller. For now we will accept it from req.body
 
-    if (title === undefined) {
-      title = "";
+    if (!title) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a title",
+      });
     }
 
-    const newRecording = Recording.create({
-      title: title,
+    const newRecording = await Recording.create({
+      song_id: id,
+      user_id: req.user._id,
+      title,
       version: nextVersion,
-      notes: notes,
-      duration: duration,
-      mime_type: mime_type,
-      file_size: file_size,
-      file_url: file_url,
+      notes,
+      duration,
+      mime_type,
+      file_size,
+      file_url,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Recording created successfully",
       success: true,
       newRecording,
@@ -149,7 +158,7 @@ export async function Create(req, res) {
       });
     }
     return res.status(500).json({
-      message: "Server error",
+      message: "create recording error",
       success: false,
     });
   }
@@ -167,24 +176,31 @@ export async function UpdateRecording(req, res) {
       });
     }
 
-    const recording = Recording.findOne({
+    const recording = await Recording.findOne({
       _id: id,
       user_id: req.user._id,
     });
 
     if (!recording) {
-      return res.status(400).json({
+      return res.status(404).json({
         message: "No recording found",
         success: false,
       });
     }
-
     if (title !== undefined) recording.title = title;
     if (notes !== undefined) recording.notes = notes;
+
+    await recording.save(); //to persist the change
+
+    return res.status(200).json({
+      message: "Recording updated successfully",
+      success: true,
+      recording,
+    });
   } catch (err) {
-    console.log("Server error", err);
+    console.log("Update recording error", err);
     return res.status(500).json({
-      message: "internal server error",
+      message: "Update recording error",
       success: false,
     });
   }
@@ -200,7 +216,7 @@ export async function DeleteRecording(req, res) {
       });
     }
 
-    const deletedRec = Recording.findOneAndDelete({
+    const deletedRec = await Recording.findOneAndDelete({
       _id: id,
       user_id: req.user._id,
     });
@@ -215,6 +231,7 @@ export async function DeleteRecording(req, res) {
     return res.status(200).json({
       message: "Recording deleted successfully",
       success: true,
+      deletedRec,
     });
   } catch (err) {
     return res.status(500).json({
