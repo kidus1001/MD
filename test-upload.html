@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DocumeRecording upload testnt</title>
+    <style>
+      body {
+        font-family: system-ui;
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      label {
+        display: block;
+        margin-top: 12px;
+        font-weight: 600;
+      }
+      input,
+      button {
+        padding: 8px;
+        margin-top: 4px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button {
+        background: #6b21a8;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 12px;
+        overflow: auto;
+        font-size: 12px;
+      }
+      .ok {
+        color: green;
+      }
+      .err {
+        color: red;
+      }
+      audio {
+        width: 100%;
+        margin-top: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Recording upload test</h1>
+
+    <label for="">JWT token</label>
+    <input id="token" placeholder="paste your token" />
+
+    <label for="">Song ID</label>
+    <input id="songId" placeholder="pste a song_id" />
+
+    <label for="">Title</label>
+    <input id="title" value="Test take" />
+
+    <label for="">Notes</label>
+    <input id="notes" value="uploaded from the test page" />
+
+    <label for="">Audio file</label>
+    <input type="file" id="audio" accept="audio/*" />
+
+    <button onclick="upload()">Upload</button>
+
+    <pre id="out">Ready.</pre>
+    <div id="player"></div>
+
+    <script>
+      async function upload() {
+        const out = document.getElementById("out");
+        const player = document.getElementById("player");
+        out.textContent = "Uploading . . .";
+        player.innerHTML = "";
+
+        const token = document.getElementById("token").value.trim();
+        const songId = document.getElementById("songId").value.trim();
+        const title = document.getElementById("title").value;
+        const notes = document.getElementById("notes").value;
+        const file = document.getElementById("audio").files[0];
+
+        if (!token) return (out.textContent = "Missing token");
+        if (!songId) return (out.textContent = "Missing song id");
+        if (!file) return (out.textContent = "Pick an audio file first");
+
+        const form = new FormData();
+        form.append("audio", file); // ← MUST be 'audio' — matches upload.single('audio')
+        form.append("title", title);
+        form.append("notes", notes);
+        form.append("duration", "180");
+
+        try {
+          const res = await fetch(
+            `http://localhost:3001/api/songs/${songId}/recordings`,
+            {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}` }, // no Content-Type — browser sets multipart boundary
+              body: form,
+            },
+          );
+
+          const data = await res.json();
+          out.textContent =
+            `HTTP ${res.status}\n\n` + JSON.stringify(data, null, 2);
+
+          if (data.success && data.recording?.file_url) {
+            player.innerHTML = `<p class="ok">Playing uploaded file:</p>
+            <audio controls src="${data.recording.file_url}"></audio>`;
+          }
+        } catch (err) {
+          out.textContent = "Fetch failed: " + err.message;
+        }
+      }
+    </script>
+  </body>
+</html>
