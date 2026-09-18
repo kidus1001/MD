@@ -1,7 +1,7 @@
-import { navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
-export default function ProtectedRoute({ childre }) {
+export default function ProtectedRoute({ children }) {
   const { user } = useAuth();
 
   if (!user) {

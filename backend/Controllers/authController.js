@@ -60,15 +60,17 @@ export async function register(req, res) {
 export async function verifyEmail(req, res) {
   try {
     const { token } = req.query;
+
     if (!token) {
-      return res.status(400).json({ success: false, message: "Token missing" });
+      return res.status(400).json({
+        success: false,
+        message: "Token missing",
+      });
     }
 
-    const user = await User.findOne({
-      verification_token: token,
-      verification_expires: { $gt: new Date() },
-    });
+    const user = await User.findOne({ verification_token: token });
 
+    // No user with this token — either never existed, or the token is stale
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -76,17 +78,38 @@ export async function verifyEmail(req, res) {
       });
     }
 
+    // Already verified — return success so a second click isn't alarming
+    if (user.email_verified) {
+      return res.status(200).json({
+        success: true,
+        message: "Email already verified",
+      });
+    }
+
+    // Token exists and user isn't verified — check expiry
+    if (user.verification_expires && user.verification_expires < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "This verification link has expired",
+      });
+    }
+
+    // All checks passed — flip the flag
     user.email_verified = true;
-    user.verification_token = null;
     user.verification_expires = null;
+    // Note: we keep verification_token so a second click can be detected
     await user.save();
 
-    return res.json({ success: true, message: "Email verified" });
+    return res.json({
+      success: true,
+      message: "Email verified",
+    });
   } catch (err) {
     console.error("Verify email error:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Something went wrong" });
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 }
 
