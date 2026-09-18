@@ -234,3 +234,51 @@ SongTag {
 - Rate Limit by IP Address (especially /auth/login, /auth/register: max 5 attempts/min)
 - Max upload size: 50MB per recording
 - Pagination default: 20 items per page (max 100)
+
+---
+
+## Frontend
+
+- Note - For every page, ask:
+
+1. What does the user come here to do? (One verb answer)
+2. Is this a list, a detail or a form?
+3. Could this be part of another page instead of its own?
+
+### Pages
+
+- Auth
+
+1. /login
+2. /register
+3. /verify-email
+
+- After-Auth
+
+4. / -> /Dashboard (To see metrics/ counts, A few recently updated songs, Pinned project cards)
+5. /projects (To see the list of projects, new project button, search bar and sorting)
+6. /projects/new (Create project form)
+7. /projects/:id (Project detail, songs of the project, new song button, inline edit and delete)
+8. /songs (List of all songs under all projects, filters (scale, status, project, keyword), sorting features)
+9. /songs/new (To create a new song)
+10. /songs/:id (Detail of a song, inline editing)
+11. /settings (profile, preference (b or #), (light/ dark mode (saved everytime it is updated)), logout and delete)
+12. For version 01 recording is from outside (we just upload them here, but will have a sorting interms of version number and somethiong like that)
+
+- Full Builder List
+
+1.  lib/api.js ← fetch wrapper, no page
+2.  context/AuthContext.jsx ← user state, no page
+3.  components/Layout.jsx ← nav shell, no page
+4.  components/ProtectedRoute.jsx ← auth guard, no page
+5.  App.jsx ← routes + redirects
+6.  pages/Login.jsx ← refactor existing
+7.  pages/Register.jsx ← refactor existing
+8.  pages/VerifyEmail.jsx ← already done
+9.  pages/SongList.jsx ← first real page
+10. pages/SongDetail.jsx
+11. pages/SongForm.jsx
+12. pages/ProjectList.jsx
+13. pages/ProjectDetail.jsx
+14. pages/ProjectForm.jsx
+15. pages/Settings.jsx
