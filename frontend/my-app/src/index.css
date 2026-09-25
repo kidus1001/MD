@@ -1,1 +1,49 @@
 @import "tailwindcss";
+
+@theme {
+  /* Backgrounds */
+  --color-canvas: #6b8296; /* page background — your anchor */
+  --color-darker-canvas: #4d5f70; /* insets: inputs, code blocks, nested bg */
+  --color-surface: #7d93a6; /* cards, panels, nav bar */
+  --color-surface-hover: #8fa4b5; /* hovering a clickable surface */
+
+  /* Borders */
+  --color-border: #566b7d; /* default outline for cards/inputs */
+  --color-border-strong: #3d4d5c; /* emphasized borders (focus, active) */
+
+  /* Text */
+  --color-text: #0f1d29; /* primary reading color — dark on light */
+  --color-text-muted: #2a3a48; /* supporting text */
+  --color-text-faint: #4a5a68; /* placeholders, hints */
+  --color-text-hover: #000000; /* text on hover — darkest */
+
+  /* Semantic */
+  --color-accent: #bfcbd6; /* primary CTA — purple */
+  --color-accent-hover: #6b8296; /* CTA on hover */
+  --color-error: #451010; /* error text/borders — dark red */
+  --color-error-bg: #876c6c; /* error banner background */
+}
+
+html,
+body {
+  background-color: var(--color-canvas);
+  margin: 0;
+}
+
+@utility bg-grid {
+  background-color: theme(--color-canvas);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #4d5f70 inset !important;
+  -webkit-text-fill-color: #0f1d29 !important;
+  caret-color: #0f1d29;
+  transition: background-color 5000s ease-in-out 0s;
+}
