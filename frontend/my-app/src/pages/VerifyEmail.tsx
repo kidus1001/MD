@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 
 export default function VerifyEmail() {
   const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const token = params.get("token");
 
   const [status, setStatus] = useState(token ? "verifying" : "error");
@@ -18,10 +21,14 @@ export default function VerifyEmail() {
 
     api
       .get(`/api/auth/verify-email?token=${token}`)
-      .then(() => {
+      .then((data) => {
         if (cancelled) return;
+
+        login(data.user, data.token);
         setStatus("success");
-        setMessage("Your email is verified. You can now sign in.");
+        setMessage(`Welcome, ${data.user.name}`);
+
+        setTimeout(() => navigate("/projects"), 1500);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -45,12 +52,9 @@ export default function VerifyEmail() {
           <>
             <h1 className="text-2xl font-bold text-green-600 mb-2">Verified</h1>
             <p className="text-gray-700 mb-6">{message}</p>
-            <Link
-              to="/login"
-              className="inline-block bg-purple-700 hover:bg-purple-800 text-white font-medium rounded px-4 py-2 transition"
-            >
-              Go to sign in
-            </Link>
+            <p className="text-gray-500 text-sm">
+              Taking you to your dashboard…
+            </p>
           </>
         )}
 

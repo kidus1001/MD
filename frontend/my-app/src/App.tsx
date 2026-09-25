@@ -11,6 +11,7 @@ import ProjectList from "./pages/ProjectList.jsx";
 import ProjectDetail from "./pages/ProjectDetail.jsx";
 import ProjectForm from "./pages/ProjectForm.jsx";
 import Settings from "./pages/Settings.jsx";
+import CheckEmail from "./pages/CheckEmail.jsx";
 
 import Layout from "./components/Layout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -24,6 +25,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/check-email" element={<CheckEmail />} />
 
       {/* Protected — all wrapped in ProtectedRoute + Layout */}
       <Route

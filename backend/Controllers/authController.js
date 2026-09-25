@@ -70,7 +70,6 @@ export async function verifyEmail(req, res) {
 
     const user = await User.findOne({ verification_token: token });
 
-    // No user with this token — either never existed, or the token is stale
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -78,31 +77,42 @@ export async function verifyEmail(req, res) {
       });
     }
 
-    // Already verified — return success so a second click isn't alarming
-    if (user.email_verified) {
-      return res.status(200).json({
-        success: true,
-        message: "Email already verified",
-      });
-    }
-
-    // Token exists and user isn't verified — check expiry
-    if (user.verification_expires && user.verification_expires < new Date()) {
+    // Expiry check — only relevant if not yet verified
+    if (
+      !user.email_verified &&
+      user.verification_expires &&
+      user.verification_expires < new Date()
+    ) {
       return res.status(400).json({
         success: false,
         message: "This verification link has expired",
       });
     }
 
-    // All checks passed — flip the flag
-    user.email_verified = true;
-    user.verification_expires = null;
-    // Note: we keep verification_token so a second click can be detected
-    await user.save();
+    // Flip the flag if not already flipped
+    if (!user.email_verified) {
+      user.email_verified = true;
+      user.verification_expires = null;
+      await user.save();
+    }
+
+    // Issue a JWT for both first-time and repeat verifications
+    const authToken = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "3d" },
+    );
 
     return res.json({
       success: true,
       message: "Email verified",
+      token: authToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        email_verified: user.email_verified,
+      },
     });
   } catch (err) {
     console.error("Verify email error:", err);
