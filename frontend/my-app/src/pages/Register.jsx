@@ -30,7 +30,6 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-grid flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Brand */}
         <div className="mb-8 text-center">
           <h1 className="text-xl font-semibold text-text tracking-tight">
             Mezmur Debter
@@ -38,7 +37,6 @@ export default function Register() {
           <p className="text-sm text-text-faint mt-1">A home for your music</p>
         </div>
 
-        {/* Card */}
         <div className="bg-surface border border-border rounded-lg p-8">
           <h2 className="text-lg font-medium text-text mb-6">Create account</h2>
 

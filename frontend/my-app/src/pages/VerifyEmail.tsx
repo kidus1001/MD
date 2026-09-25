@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 
@@ -7,6 +7,7 @@ export default function VerifyEmail() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const { login } = useAuth();
+
   const token = params.get("token");
 
   const [status, setStatus] = useState(token ? "verifying" : "error");
@@ -24,9 +25,16 @@ export default function VerifyEmail() {
       .then((data) => {
         if (cancelled) return;
 
+        if (!data.user || !data.token) {
+          setStatus("error");
+          setMessage("Server response was incomplete. Please try signing in.");
+          return;
+        }
+
+        localStorage.removeItem("pending_email");
         login(data.user, data.token);
         setStatus("success");
-        setMessage(`Welcome, ${data.user.name}`);
+        setMessage(`Welcome, ${data.user.name}!`);
 
         setTimeout(() => navigate("/projects"), 1500);
       })
@@ -39,95 +47,49 @@ export default function VerifyEmail() {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [token, login, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm bg-white rounded-lg shadow p-8 text-center">
-        {status === "verifying" && (
-          <p className="text-gray-600">Verifying your email…</p>
-        )}
+    <div className="min-h-screen bg-grid flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-xl font-semibold text-text tracking-tight">
+            Mezmur Debter
+          </h1>
+          <p className="text-sm text-text-faint mt-1">A home for your music</p>
+        </div>
 
-        {status === "success" && (
-          <>
-            <h1 className="text-2xl font-bold text-green-600 mb-2">Verified</h1>
-            <p className="text-gray-700 mb-6">{message}</p>
-            <p className="text-gray-500 text-sm">
-              Taking you to your dashboard…
-            </p>
-          </>
-        )}
+        <div className="bg-surface border border-border rounded-lg p-8 text-center">
+          {status === "verifying" && (
+            <p className="text-text-muted">Verifying your email…</p>
+          )}
 
-        {status === "error" && (
-          <>
-            <h1 className="text-2xl font-bold text-red-600 mb-2">
-              Verification failed
-            </h1>
-            <p className="text-gray-700 mb-6">{message}</p>
-            <Link
-              to="/register"
-              className="inline-block text-purple-700 hover:underline"
-            >
-              Register again
-            </Link>
-          </>
-        )}
+          {status === "success" && (
+            <>
+              <h2 className="text-lg font-medium text-text mb-2">Verified</h2>
+              <p className="text-text-muted mb-6">{message}</p>
+              <p className="text-sm text-text-faint">
+                Taking you to your dashboard…
+              </p>
+            </>
+          )}
+
+          {status === "error" && (
+            <>
+              <h2 className="text-lg font-medium text-text mb-2">
+                Verification failed
+              </h2>
+              <p className="text-text-muted mb-6">{message}</p>
+              <Link
+                to="/register"
+                className="text-sm text-text hover:text-text-hover underline-offset-4 hover:underline transition"
+              >
+                Register again
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
 }
-
-// import { useEffect, useState } from 'react';
-// import { useSearchParams, Link } from 'react-router-dom';
-
-// export default function VerifyEmail () {
-//     const [params] = useSearchParams();
-//     const token = params.get('token');
-//     const [status, setStatus] = useState(token? 'verifying': 'error');
-//     const [message, setMessage] = useState(token? '': 'No verification token found in the link.');
-
-//     useEffect (() => {
-//         if (!token) {
-//             return;
-//         }
-
-//         fetch (`http://localhost:3001/api/auth/verify-email?token=${token}`)
-//             .then (res => res.json())
-//             .then (data => {
-//                 if (data.success) {
-//                     setStatus ('success');
-//                     setMessage ('Your email is verified. You can now log in.');
-//                 } else {
-//                     setStatus('error');
-//                     setMessage (data.message || 'Verification failed.')
-//                 }
-//             })
-//             .catch (() => {
-//                 setStatus('error');
-//                 setMessage ('Could not reach the server.')
-//             });
-//     }, [token]);
-
-//     return (
-//         <div className="max-w-md mx-auto mt-20 text-center px-4">
-//             {status === 'verifying' && <p>Verifying your email</p>}
-
-//             {status === "success" && (
-//                 <>
-//                     <h1 className='text-2xl font-bold text-green-600'>Verified!</h1>
-//                     <p className='mt-2 text-gray-700'>{message}</p>
-//                     <Link to="/login" className="text-blue-600 underline mt-4 inline-block">
-//                         Go to login
-//                     </Link>
-//                 </>
-//             )}
-
-//             {status === "error" && (
-//                 <>
-//                     <h1 className='text-2xl font-bold text-red-600'>Verification failed</h1>
-//                     <p className='mt-2 text-gray-700'>{message}</p>
-//                 </>
-//             )}
-//         </div>
-//     )
-// }
