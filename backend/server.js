@@ -7,6 +7,7 @@ import authRoute from "./Routes/authRoute.js";
 import projectRoute from "./Routes/projectRoute.js";
 import songRoute from "./Routes/songRoute.js";
 import recordingRoute from "./Routes/recordingRoute.js";
+import dashboardRoute from "./Routes/dashboardRoute.js";
 // import authRoute from './Routes/authRoute.js';
 
 // const express = require("express");
@@ -27,6 +28,7 @@ app.use("/api/auth", authRoute);
 app.use("/api/projects", projectRoute);
 app.use("/api/songs", songRoute);
 app.use("/api", recordingRoute);
+app.use("/api/dashboard", dashboardRoute);
 
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
