@@ -282,3 +282,16 @@ SongTag {
 13. pages/ProjectDetail.jsx
 14. pages/ProjectForm.jsx
 15. pages/Settings.jsx
+
+- Now that I am actually building it (the frontend)
+- Steps
+
+1. SongList
+2. SongDetail
+3. SongForm (Edit / Detail)
+4. Recording Upload
+5. Projects (List, Detail, Form)
+6. Dashboard
+7. Settings
+8. Light and Dark mode toggle
+9. Polish

@@ -12,7 +12,6 @@ import ProjectDetail from "./pages/ProjectDetail.jsx";
 import ProjectForm from "./pages/ProjectForm.jsx";
 import Settings from "./pages/Settings.jsx";
 import CheckEmail from "./pages/CheckEmail.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
 
 import Layout from "./components/Layout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -27,7 +26,6 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/check-email" element={<CheckEmail />} />
-      <Route path="/dashboard" element={<Dashboard />} />
 
       {/* Protected — all wrapped in ProtectedRoute + Layout */}
       <Route
@@ -53,7 +51,7 @@ function App() {
       {/* Root redirect */}
       <Route
         path="/"
-        element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
+        element={<Navigate to={user ? "/projects" : "/login"} replace />}
       />
     </Routes>
   );
