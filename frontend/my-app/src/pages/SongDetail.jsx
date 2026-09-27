@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 import { formatMajor } from "../lib/format";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 export default function SongDetail() {
   const { id } = useParams();
@@ -18,6 +19,9 @@ export default function SongDetail() {
   const [recordingTitle, setRecordingTitle] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+
+  const [confirmDeleteSong, setConfirmDeleteSong] = useState(false);
+  const [confirmDeleteRecId, setConfirmDeleteRecId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -41,18 +45,23 @@ export default function SongDetail() {
     };
   }, [id]);
 
-  async function handleDelete() {
-    if (
-      !confirm(
-        "Delete this song and all its recordings? This cannot be undone.",
-      )
-    )
-      return;
+  async function handleDeleteSong() {
+    setConfirmDeleteSong(false);
     try {
       await api.del(`/api/songs/${id}`);
       navigate("/songs");
     } catch (err) {
       setError(err.message);
+    }
+  }
+
+  async function handleDeleteRecording(recordingId) {
+    setConfirmDeleteRecId(null);
+    try {
+      await api.del(`/api/recordings/${recordingId}`);
+      setRecordings((prev) => prev.filter((r) => r._id !== recordingId));
+    } catch (err) {
+      setUploadError(err.message);
     }
   }
 
@@ -89,16 +98,6 @@ export default function SongDetail() {
     }
   }
 
-  async function handleDeleteRecording(recordingId) {
-    if (!confirm("Delete this recording?")) return;
-    try {
-      await api.del(`/api/recordings/${recordingId}`);
-      setRecordings((prev) => prev.filter((r) => r._id !== recordingId));
-    } catch (err) {
-      setUploadError(err.message);
-    }
-  }
-
   if (loading) return <p className="text-text-muted">Loading…</p>;
   if (error)
     return (
@@ -125,7 +124,7 @@ export default function SongDetail() {
             Edit
           </Link>
           <button
-            onClick={handleDelete}
+            onClick={() => setConfirmDeleteSong(true)}
             className="text-sm text-text-faint hover:text-error px-3 py-1.5 transition"
           >
             Delete
@@ -172,7 +171,7 @@ export default function SongDetail() {
               <RecordingRow
                 key={r._id}
                 recording={r}
-                onDelete={handleDeleteRecording}
+                onDelete={() => setConfirmDeleteRecId(r._id)}
               />
             ))}
           </div>
@@ -231,6 +230,27 @@ export default function SongDetail() {
           </p>
         )}
       </section>
+
+      {/* Dialogs — one each, at the end of the component */}
+      <ConfirmDialog
+        open={confirmDeleteSong}
+        title="Delete this song?"
+        message="All its recordings will be deleted too. This cannot be undone."
+        confirmLabel="Delete song"
+        danger
+        onConfirm={handleDeleteSong}
+        onCancel={() => setConfirmDeleteSong(false)}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteRecId !== null}
+        title="Delete this recording?"
+        message="The audio file will be removed permanently."
+        confirmLabel="Delete"
+        danger
+        onConfirm={() => handleDeleteRecording(confirmDeleteRecId)}
+        onCancel={() => setConfirmDeleteRecId(null)}
+      />
     </div>
   );
 }
@@ -277,7 +297,7 @@ function RecordingRow({ recording, onDelete }) {
         preload="none"
       />
       <button
-        onClick={() => onDelete(recording._id)}
+        onClick={onDelete}
         className="text-xs text-text-faint hover:text-error transition shrink-0"
       >
         Delete

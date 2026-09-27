@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 import { MAJOR_OPTIONS } from "../lib/format";
@@ -48,17 +48,26 @@ const emptyForm = {
   status: "idea",
   percent: 0,
   notes: "",
+  project_id: null, // ← NEW: allows the song to be created inside a specific project
 };
 
 export default function SongForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+
   const isEdit = Boolean(id);
+  const fromProject = searchParams.get("project"); // ← NEW
 
   const accidental = user?.preferences?.accidental || "sharp";
 
-  const [form, setForm] = useState(emptyForm);
+  // If creating from a project, pre-fill project_id
+  const [form, setForm] = useState(() => ({
+    ...emptyForm,
+    project_id: fromProject || null,
+  }));
+
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -82,6 +91,7 @@ export default function SongForm() {
           status: s.status || "idea",
           percent: s.percent ?? 0,
           notes: s.notes || "",
+          project_id: s.project_id || null,
         });
         setLoading(false);
       })
@@ -130,9 +140,16 @@ export default function SongForm() {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <h1 className="text-2xl font-medium text-text">
-        {isEdit ? "Edit song" : "New song"}
-      </h1>
+      <div>
+        <h1 className="text-2xl font-medium text-text">
+          {isEdit ? "Edit song" : "New song"}
+        </h1>
+        {fromProject && !isEdit && (
+          <p className="text-sm text-text-muted mt-1">
+            Will be added to this project
+          </p>
+        )}
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basics */}

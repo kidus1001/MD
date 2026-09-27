@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 import { formatMajor } from "../lib/format";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -14,6 +15,7 @@ export default function ProjectDetail() {
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -38,10 +40,7 @@ export default function ProjectDetail() {
   }, [id]);
 
   async function handleDelete() {
-    if (
-      !confirm("Delete this project and all its songs? This cannot be undone.")
-    )
-      return;
+    setConfirmDelete(false);
     try {
       await api.del(`/api/projects/${id}`);
       navigate("/projects");
@@ -76,7 +75,7 @@ export default function ProjectDetail() {
             Edit
           </Link>
           <button
-            onClick={handleDelete}
+            onClick={() => setConfirmDelete(true)}
             className="text-sm text-text-faint hover:text-error px-3 py-1.5 transition"
           >
             Delete
@@ -110,7 +109,7 @@ export default function ProjectDetail() {
           Songs ({songs.length})
         </h2>
         <Link
-          to="/songs/new"
+          to={`/songs/new?project=${id}`}
           className="text-xs text-text-muted hover:text-text transition"
         >
           + Add song
@@ -148,6 +147,16 @@ export default function ProjectDetail() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Delete this project?"
+        message="All songs inside will be deleted too. This cannot be undone."
+        confirmLabel="Delete project"
+        danger
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmDelete(false)}
+      />
     </div>
   );
 }

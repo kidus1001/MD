@@ -2,26 +2,26 @@
 
 @theme {
   /* Backgrounds */
-  --color-canvas: #6b8296; /* page background — your anchor */
-  --color-darker-canvas: #4d5f70; /* insets: inputs, code blocks, nested bg */
-  --color-surface: #7d93a6; /* cards, panels, nav bar */
-  --color-surface-hover: #8fa4b5; /* hovering a clickable surface */
+  --color-canvas: #1a2330; /* deep blue-gray, easier on the eyes than pure black */
+  --color-darker-canvas: #131a24; /* inputs, insets — darker than canvas */
+  --color-surface: #24303f; /* cards, nav — clearly above canvas */
+  --color-surface-hover: #2e3a4b; /* hovering a clickable surface */
 
   /* Borders */
-  --color-border: #566b7d; /* default outline for cards/inputs */
-  --color-border-strong: #3d4d5c; /* emphasized borders (focus, active) */
+  --color-border: #334155; /* visible but quiet */
+  --color-border-strong: #475569; /* focus, active states */
 
   /* Text */
-  --color-text: #0f1d29; /* primary reading color — dark on light */
-  --color-text-muted: #2a3a48; /* supporting text */
-  --color-text-faint: #4a5a68; /* placeholders, hints */
-  --color-text-hover: #000000; /* text on hover — darkest */
+  --color-text: #f1f5f9; /* near-white, primary readable */
+  --color-text-muted: #94a3b8; /* supporting text */
+  --color-text-faint: #64748b; /* placeholders, hints */
+  --color-text-hover: #ffffff; /* pure white on hover */
 
-  /* Semantic */
-  --color-accent: #bfcbd6; /* primary CTA — purple */
-  --color-accent-hover: #6b8296; /* CTA on hover */
-  --color-error: #451010; /* error text/borders — dark red */
-  --color-error-bg: #876c6c; /* error banner background */
+  --color-accent: #c26909;
+  --color-accent-hover: #e07b0a;
+  --color-error: #f87171;
+  --color-error-bg: #2d1b1b;
+  --color-success: #4ade80;
 }
 
 html,
@@ -31,19 +31,22 @@ body {
 }
 
 @utility bg-grid {
-  background-color: theme(--color-canvas);
+  background-color: var(--color-canvas);
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 44px 44px;
 }
 
+/* Chrome autofill override — hardcoded hex because CSS vars
+   don't resolve reliably inside -webkit-box-shadow for autofill.
+   Update these if --color-darker-canvas or --color-text change. */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #4d5f70 inset !important;
-  -webkit-text-fill-color: #ffffff !important;
-  caret-color: #0f1d29;
+  -webkit-box-shadow: 0 0 0 1000px #131a24 inset !important;
+  -webkit-text-fill-color: #f1f5f9 !important;
+  caret-color: #f1f5f9;
   transition: background-color 5000s ease-in-out 0s;
 }
