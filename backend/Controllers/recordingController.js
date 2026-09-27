@@ -182,7 +182,7 @@ export async function CreateRecording(req, res) {
     return res.status(201).json({
       message: "Recording created successfully",
       success: true,
-      newRecording,
+      recording: newRecording,
     });
   } catch (err) {
     if (err.code === 11000) {

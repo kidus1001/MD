@@ -196,3 +196,83 @@ export async function DeleteProject(req, res) {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 }
+
+async function computeProjectStats(projectId, userId) {
+  const result = await Song.aggregate([
+    { $match: { project_id: projectId, user_id: userId } },
+    {
+      $group: {
+        _id: null,
+        song_count: { $sum: 1 },
+        percent: { $avg: "$percent" },
+      },
+    },
+  ]);
+
+  if (result.length === 0) {
+    return { song_count: 0, percent: 0 };
+  }
+
+  return {
+    song_count: result[0].song_count,
+    percent: Math.round(result[0].percent || 0),
+  };
+}
+
+// GET /api/projects — list all projects with live stats
+export async function getProjects(req, res) {
+  try {
+    const projects = await Project.find({ user_id: req.user._id })
+      .sort({ updated_at: -1 })
+      .lean();
+
+    // Attach live stats to each project
+    const enriched = await Promise.all(
+      projects.map(async (p) => {
+        const stats = await computeProjectStats(p._id, req.user._id);
+        return { ...p, ...stats };
+      }),
+    );
+
+    return res.status(200).json({
+      success: true,
+      count: enriched.length,
+      projects: enriched,
+    });
+  } catch (err) {
+    console.error("Get projects error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+// GET /api/projects/:id — single project with live stats
+export async function getProject(req, res) {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+
+    const project = await Project.findOne({
+      _id: id,
+      user_id: req.user._id,
+    }).lean();
+
+    if (!project) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    }
+
+    const stats = await computeProjectStats(project._id, req.user._id);
+
+    return res.status(200).json({
+      success: true,
+      project: { ...project, ...stats },
+    });
+  } catch (err) {
+    console.error("Get project error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}

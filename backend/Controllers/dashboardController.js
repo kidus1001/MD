@@ -1,6 +1,26 @@
 import Song from "../Models/songModel.js";
 import Project from "../Models/projectModel.js";
 
+async function computeProjectStats(projectId, userId) {
+  const result = await Song.aggregate([
+    { $match: { project_id: projectId, user_id: userId } },
+    {
+      $group: {
+        _id: null,
+        song_count: { $sum: 1 },
+        percent: { $avg: "$percent" },
+      },
+    },
+  ]);
+
+  if (result.length === 0) return { song_count: 0, percent: 0 };
+
+  return {
+    song_count: result[0].song_count,
+    percent: Math.round(result[0].percent || 0),
+  };
+}
+
 export async function getDashboard(req, res) {
   try {
     const userId = req.user._id;
@@ -32,11 +52,19 @@ export async function getDashboard(req, res) {
         .lean(),
     ]);
 
+    // Enrich recent projects with live stats
+    const enrichedProjects = await Promise.all(
+      recentProjects.map(async (p) => {
+        const stats = await computeProjectStats(p._id, userId);
+        return { ...p, ...stats };
+      }),
+    );
+
     return res.status(200).json({
       success: true,
       stats: { totalSongs, totalProjects, inProgress, recorded },
       recentSongs,
-      recentProjects,
+      recentProjects: enrichedProjects,
     });
   } catch (err) {
     console.error("Dashboard error:", err);
