@@ -36,7 +36,7 @@ export default function VerifyEmail() {
         setStatus("success");
         setMessage(`Welcome, ${data.user.name}!`);
 
-        setTimeout(() => navigate("/projects"), 1500);
+        setTimeout(() => navigate("/dashboard"), 1500);
       })
       .catch((err) => {
         if (cancelled) return;

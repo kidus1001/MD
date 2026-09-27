@@ -1,5 +1,6 @@
 import Song from "../Models/songModel.js";
 import Recording from "../Models/recordingModel.js";
+import Project from "../Models/projectModel.js";
 import mongoose from "mongoose";
 
 export async function AllSongs(req, res) {
@@ -55,25 +56,55 @@ export async function CreateSong(req, res) {
       status,
       percent,
       notes,
+      project_id,
     } = req.body;
+
     if (!title) {
-      res.status(400).json({ message: "Please provide title" });
-      return;
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a title",
+      });
     }
-    const SongExists = await Song.findOne({
+
+    const songExists = await Song.findOne({
       title,
       user_id: req.user._id,
     });
 
-    if (SongExists) {
+    if (songExists) {
       return res.status(400).json({
-        message: "You already have a song with that title",
         success: false,
+        message: "You already have a song with that title",
       });
+    }
+
+    // Resolve project_id — either from request or auto-create "Untitled"
+    let resolvedProjectId = project_id;
+
+    if (!resolvedProjectId) {
+      let untitled = await Project.findOne({
+        user_id: req.user._id,
+        title: "Untitled",
+        type: "Untitled",
+      });
+
+      if (!untitled) {
+        untitled = await Project.create({
+          user_id: req.user._id,
+          title: "Untitled",
+          type: "Untitled",
+          description: "",
+          percent: 0,
+          song_count: 0,
+        });
+      }
+
+      resolvedProjectId = untitled._id;
     }
 
     const song = await Song.create({
       user_id: req.user._id,
+      project_id: resolvedProjectId,
       title,
       lyric_body,
       poem_by,
@@ -92,11 +123,8 @@ export async function CreateSong(req, res) {
       song,
     });
   } catch (err) {
-    console.log("Error: ", err);
-    return res.status(500).json({
-      message: "Server error",
-      success: false,
-    });
+    console.error("Create song error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 }
 

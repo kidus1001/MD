@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
+import { formatMajor } from "../lib/format";
 
 export default function SongList() {
+  const { user } = useAuth();
+  const accidental = user?.preferences?.accidental || "sharp";
+
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -35,7 +40,6 @@ export default function SongList() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-medium text-text">All Songs</h1>
@@ -53,7 +57,6 @@ export default function SongList() {
         </Link>
       </div>
 
-      {/* Search */}
       <input
         type="text"
         value={q}
@@ -62,7 +65,6 @@ export default function SongList() {
         className="w-full bg-surface border border-border rounded px-4 py-2.5 text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
       />
 
-      {/* States */}
       {error && (
         <div className="text-sm text-error bg-error-bg border border-error rounded px-3 py-2">
           {error}
@@ -85,11 +87,10 @@ export default function SongList() {
         </div>
       )}
 
-      {/* Song list */}
       {!loading && songs.length > 0 && (
         <div className="space-y-2">
           {songs.map((song) => (
-            <SongRow key={song._id} song={song} />
+            <SongRow key={song._id} song={song} accidental={accidental} />
           ))}
         </div>
       )}
@@ -97,31 +98,28 @@ export default function SongList() {
   );
 }
 
-function SongRow({ song }) {
+function SongRow({ song, accidental }) {
   return (
     <Link
       to={`/songs/${song._id}`}
       className="block bg-surface border border-border rounded-lg p-4 hover:bg-surface-hover transition"
     >
       <div className="flex items-center gap-4">
-        {/* Icon */}
         <div className="w-10 h-10 rounded bg-darker-canvas flex items-center justify-center text-text-muted shrink-0">
           ♪
         </div>
 
-        {/* Main info */}
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-text truncate">{song.title}</p>
           <div className="flex items-center gap-3 mt-1 text-xs text-text-muted">
             <StatusPill status={song.status} />
             <span>
-              {song.scale} · {song.major}
+              {song.scale} · {formatMajor(song.major, accidental)}
             </span>
             {song.poem_by?.name && <span>· Poem: {song.poem_by.name}</span>}
           </div>
         </div>
 
-        {/* Percent */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="w-24 h-1.5 bg-darker-canvas rounded-full overflow-hidden">
             <div

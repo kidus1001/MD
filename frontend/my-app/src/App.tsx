@@ -12,7 +12,7 @@ import ProjectDetail from "./pages/ProjectDetail.jsx";
 import ProjectForm from "./pages/ProjectForm.jsx";
 import Settings from "./pages/Settings.jsx";
 import CheckEmail from "./pages/CheckEmail.jsx";
-
+import Dashboard from "./pages/Dashboard";
 import Layout from "./components/Layout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -45,13 +45,15 @@ function App() {
         <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="/projects/:id/edit" element={<ProjectForm />} />
 
+        <Route path="/dashboard" element={<Dashboard />} />
+
         <Route path="/settings" element={<Settings />} />
       </Route>
 
       {/* Root redirect */}
       <Route
         path="/"
-        element={<Navigate to={user ? "/projects" : "/login"} replace />}
+        element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
       />
     </Routes>
   );

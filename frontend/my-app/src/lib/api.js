@@ -6,7 +6,7 @@ const getToken = () => localStorage.getItem("token");
 function handleUnauthorized() {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
-  window.location.href = "login";
+  window.location.href = "/login";
 }
 
 async function request(method, path, body) {
@@ -39,11 +39,38 @@ async function request(method, path, body) {
   return data;
 }
 
+async function upload(path, formData) {
+  const headers = {};
+  const token = getToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  if (res.status === 401) {
+    handleUnauthorized();
+    throw new Error("Not authorized");
+  }
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    const message = data?.message || `Request failed (${res.status})`;
+    throw new Error(message);
+  }
+
+  return data;
+}
+
 export const api = {
   get: (path) => request("GET", path),
   post: (path, body) => request("POST", path, body),
   put: (path, body) => request("PUT", path, body),
-  delete: (path) => request("DELETE", path),
+  del: (path) => request("DELETE", path),
+  upload,
 };
 
 // const PORT = 3001;
