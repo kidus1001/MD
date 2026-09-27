@@ -295,3 +295,8 @@ SongTag {
 7. Settings
 8. Light and Dark mode toggle
 9. Polish
+
+-
+
+1. Search
+2. Theme
