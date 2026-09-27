@@ -172,6 +172,7 @@ export async function login(req, res) {
         id: user._id,
         name: user.name,
         email: user.email,
+        email_verified: user.email_verified,
         createdAt: user.createdAt,
       },
     });
@@ -189,6 +190,7 @@ export async function getProfile(req, res) {
       id: req.user._id,
       name: req.user.name,
       email: req.user.email,
+      email_verified: user.email_verified,
       createdAt: req.user.createdAt,
     },
   });
@@ -238,6 +240,7 @@ export async function updateProfile(req, res) {
         id: user._id,
         name: user.name,
         email: user.email,
+        email_verified: user.email_verified,
         preferences: user.preferences,
       },
     });
