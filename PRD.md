@@ -299,4 +299,8 @@ SongTag {
 -
 
 1. Search
-2. Theme
+2. Theme (Ignored that for version 1)
+
+-
+
+1. Deployment (Vercel, Render, Buyimng a domain name, Post)
