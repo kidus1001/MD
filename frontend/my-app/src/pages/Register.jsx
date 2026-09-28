@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,15 +19,25 @@ export default function Register() {
     setSubmitting(true);
 
     try {
-      await api.post("/api/auth/register", { name, email, password });
-      localStorage.setItem("pending_email", email);
-      navigate("/check-email");
+      const data = await api.post("/api/auth/register", {
+        name,
+        email,
+        password,
+      });
+      login(data.user, data.token);
+      navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Registration failed");
     } finally {
       setSubmitting(false);
     }
   }
+
+  const inputClass =
+    "w-full bg-darker-canvas border border-border rounded px-3 py-2 text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition";
+
+  const labelClass =
+    "block text-xs uppercase tracking-wider text-text-muted mb-2";
 
   return (
     <div className="min-h-screen bg-grid flex items-center justify-center px-4">
@@ -42,42 +54,37 @@ export default function Register() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs uppercase tracking-wider text-text-muted mb-2">
-                Name
-              </label>
+              <label className={labelClass}>Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full bg-darker-canvas border border-border rounded px-3 py-2 text-white placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
+                autoFocus
+                className={inputClass}
               />
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-wider text-text-muted mb-2">
-                Email
-              </label>
+              <label className={labelClass}>Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-darker-canvas border border-border rounded px-3 py-2 text-white placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
+                className={inputClass}
               />
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-wider text-text-muted mb-2">
-                Password
-              </label>
+              <label className={labelClass}>Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full bg-darker-canvas border border-border rounded px-3 py-2 text-white placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
+                className={inputClass}
               />
             </div>
 
