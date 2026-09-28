@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Nosta from "../assets/nostalgic.png";
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -53,9 +54,42 @@ export default function Layout() {
         </div>
       </nav>
 
-      <main className="max-w-5xl mx-auto p-6">
-        <Outlet />
-      </main>
+      <div className="min-h-screen bg-grid flex flex-col">
+        <nav>...</nav>
+
+        <main className="max-w-5xl mx-auto p-6 w-full flex-1">
+          <Outlet />
+        </main>
+
+        <footer className="border-t border-border mt-12">
+          <div className="max-w-5xl mx-auto px-6 py-6 flex items-center justify-between gap-4 text-xs text-text-faint">
+            <div>
+              <span className="text-text-muted">Mezmur Debter</span>
+              <span className="mx-2">·</span>
+              <span>Lyric & Melody Organizer</span>
+              <span className="mx-2">·</span>
+              <span className="text-text-muted">
+                <a
+                  href="https://t.me/SoftwareAspirer"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-accent transition"
+                >
+                  Kidus Yosef
+                </a>
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <img
+                src={Nosta}
+                alt="Nostalgic Logo"
+                className="w-9 h-9 object-contain"
+              />
+              <p className="text-archive-dark text-sm">Nostalgic Begena</p>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

@@ -6,27 +6,30 @@ import { MAJOR_OPTIONS } from "../lib/format";
 
 const SCALES = [
   "TBA",
-  "Tizita",
   "Ambassel",
   "Anchihoye",
-  "Selamta",
   "Bati",
-  "EOTC Chants - Ge'ez",
-  "EOTC Chants - Ezl",
-  "EOTC Chants - Araray",
-  "Ionian",
   "Dorian",
-  "Phrygian",
-  "Lydian",
-  "Mixolydian",
-  "Aeolian",
+  "EOTC Chants - Araray",
+  "EOTC Chants - Ezl",
+  "EOTC Chants - Ge'ez",
+  "Hirajoshi",
+  "Insen",
+  "Ionian",
   "Locrian",
+  "Lydian",
   "Major Pentatonic",
   "Minor Pentatonic",
-  "Insen",
-  "Hirajoshi",
+  "Mixolydian",
+  "Phrygian",
+  "Selamta",
+  "Tizita",
   "Yo",
-];
+].sort((a, b) => {
+  if (a === "TBA") return -1;
+  if (b === "TBA") return 1;
+  return a.localeCompare(b);
+});
 
 const STATUSES = [
   "idea",
@@ -234,17 +237,19 @@ export default function SongForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Scale</label>
-              <select
+              <input
+                type="text"
+                list="scales-list"
                 value={form.scale}
                 onChange={(e) => update("scale", e.target.value)}
+                placeholder="Type or select a scale…"
                 className={inputClass}
-              >
+              />
+              <datalist id="scales-list">
                 {SCALES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
+                  <option key={s} value={s} />
                 ))}
-              </select>
+              </datalist>
             </div>
 
             <div>
