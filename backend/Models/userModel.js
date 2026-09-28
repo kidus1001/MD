@@ -21,7 +21,6 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add a password"],
     minlength: 6, //this is used to ensure that the password is at least 6 characters long
-    select: false, //this is used to ensure that the password is not returned when querying the database
   },
   createdAt: {
     type: Date,
@@ -45,15 +44,10 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-UserSchema.pre("save", async function (next) {
-  //this is a pre-save hook that is called before saving a user to the database. It is used to hash the password before saving it to the database.
-  if (!this.isModified("password_hash")) {
-    //this is used to check if the password has been modified. If it has not been modified, we do not need to hash it again. So this is how it works: if the password has not been modified, we call the next() function to move on to the next middleware. If the password has been modified, we hash it using bcrypt and then call the next() function.
-    return;
-  }
+UserSchema.pre("save", async function () {
+  if (!this.isModified("password_hash")) return;
   this.password_hash = await bcrypt.hash(this.password_hash, 10);
 });
-
 UserSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password_hash); //Returns true if the entered password matches the hashed password stored in the database, otherwise returns false.
 };
