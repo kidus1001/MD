@@ -18,7 +18,9 @@ export default function SongList() {
     setLoading(true);
     setError("");
 
-    const url = q ? `/api/songs?q=${encodeURIComponent(q)}` : "/api/songs";
+    const url = q.trim()
+      ? `/api/songs?q=${encodeURIComponent(q.trim())}`
+      : "/api/songs";
 
     api
       .get(url)

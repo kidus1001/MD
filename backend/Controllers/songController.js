@@ -5,7 +5,8 @@ import mongoose from "mongoose";
 
 export async function AllSongs(req, res) {
   try {
-    const { page, limit, sort, order, scale, status, project } = req.query;
+    const { page, limit, sort, order, scale, status, project, q } = req.query;
+
     const pageNum = Math.max(1, parseInt(page) || 1);
     const limitNum = Math.min(100, Math.max(1, parseInt(limit) || 20));
 
@@ -13,6 +14,18 @@ export async function AllSongs(req, res) {
     if (status) filter.status = status;
     if (scale) filter.scale = scale;
     if (project) filter.project_id = project;
+
+    // Keyword search — title, lyrics, and contributor names
+    if (q && q.trim()) {
+      const escaped = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.$or = [
+        { title: { $regex: escaped, $options: "i" } },
+        { lyric_body: { $regex: escaped, $options: "i" } },
+        { "poem_by.name": { $regex: escaped, $options: "i" } },
+        { "melody_by.name": { $regex: escaped, $options: "i" } },
+        { "sung_by.name": { $regex: escaped, $options: "i" } },
+      ];
+    }
 
     const sortField = sort || "updated_at";
     const sortDir = order === "asc" ? 1 : -1;
