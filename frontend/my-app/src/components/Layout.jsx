@@ -12,7 +12,7 @@ export default function Layout() {
 
   const linkClass = ({ isActive }) =>
     `text-sm transition ${
-      isActive ? "text-text" : "text-text-muted hover:text-text"
+      isActive ? "text-accent" : "text-text-muted hover:text-text"
     }`;
 
   return (

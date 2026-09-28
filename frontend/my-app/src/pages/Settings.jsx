@@ -84,12 +84,12 @@ export default function Settings() {
 
               <div>
                 <label className={labelClass}>Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={inputClass}
-                />
+                <div className="flex items-center justify-between gap-3 bg-darker-canvas border border-border rounded px-3 py-2">
+                  <span className="text-sm text-text truncate">{email}</span>
+                  <span className="text-xs text-text-faint shrink-0">
+                    Read-only
+                  </span>
+                </div>
               </div>
             </section>
 
@@ -158,7 +158,7 @@ export default function Settings() {
             </h2>
             <button
               onClick={handleLogout}
-              className="text-sm text-text-muted hover:text-text underline-offset-4 hover:underline transition"
+              className="bg-darker-canvas border border-border hover:border-border-strong hover:bg-surface text-text text-sm font-medium rounded px-4 py-2 transition"
             >
               Sign out of this device
             </button>
@@ -196,14 +196,12 @@ function PreviewCard({ accidental }) {
           </div>
 
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-text truncate">
-              Yene Habesha
-            </p>
+            <p className="text-sm font-medium text-text truncate">ለአብ ለወልድ</p>
             <div className="flex items-center gap-2 mt-1 text-xs text-text-muted">
               <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-surface text-text-muted">
                 draft
               </span>
-              <span>Tizita · {formatMajor("D#", accidental)}</span>
+              <span>Anchihoye · {formatMajor("D#", accidental)}</span>
             </div>
           </div>
 
