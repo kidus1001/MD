@@ -38,7 +38,7 @@ export default function Login() {
             Mezmur Debter
           </h1>
           <p className="text-sm text-text-faint mt-1">
-            A home for your hymns / musics
+            A home for your hymn / music
           </p>
         </div>
 
