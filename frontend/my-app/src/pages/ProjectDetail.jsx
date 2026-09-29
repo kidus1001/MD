@@ -60,9 +60,11 @@ export default function ProjectDetail() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-medium text-text">{project.title}</h1>
+          <h1 className="text-xl md:text-2xl font-medium text-text break-words">
+            {project.title}
+          </h1>
           <p className="text-sm text-text-muted mt-1">
             {project.type} · {songs.length} song{songs.length === 1 ? "" : "s"}
           </p>
@@ -84,14 +86,14 @@ export default function ProjectDetail() {
       </div>
 
       {project.description && (
-        <section className="bg-surface border border-border rounded-lg p-5">
+        <section className="bg-surface border border-border rounded-lg p-4 md:p-5">
           <p className="text-sm text-text-muted whitespace-pre-wrap leading-relaxed">
             {project.description}
           </p>
         </section>
       )}
 
-      <section className="bg-surface border border-border rounded-lg p-5">
+      <section className="bg-surface border border-border rounded-lg p-4 md:p-5">
         <div className="flex items-center justify-between text-xs text-text-muted mb-2">
           <span className="uppercase tracking-wider">Project progress</span>
           <span className="tabular-nums">{project.percent || 0}%</span>
@@ -117,7 +119,7 @@ export default function ProjectDetail() {
       </div>
 
       {songs.length === 0 ? (
-        <div className="bg-surface border border-border rounded-lg p-10 text-center">
+        <div className="bg-surface border border-border rounded-lg p-8 md:p-10 text-center">
           <p className="text-sm text-text-muted">
             No songs in this project yet.
           </p>
@@ -128,14 +130,14 @@ export default function ProjectDetail() {
             <Link
               key={song._id}
               to={`/songs/${song._id}`}
-              className="block bg-surface border border-border rounded-lg p-4 hover:bg-surface-hover transition"
+              className="block bg-surface border border-border rounded-lg p-3 md:p-4 hover:bg-surface-hover transition"
             >
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-text truncate">
                     {song.title}
                   </p>
-                  <p className="text-xs text-text-muted mt-1">
+                  <p className="text-xs text-text-muted mt-1 truncate">
                     {song.scale} · {formatMajor(song.major, accidental)}
                   </p>
                 </div>

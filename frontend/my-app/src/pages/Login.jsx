@@ -27,19 +27,20 @@ export default function Login() {
     }
   }
 
+  const inputClass =
+    "w-full bg-darker-canvas border border-border rounded px-3 py-2.5 text-base md:text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition";
+
   return (
-    <div className="min-h-screen bg-grid flex items-center justify-center px-4">
+    <div className="min-h-screen bg-grid flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        {/* Brand */}
-        <div className="mb-8 text-center">
+        <div className="mb-6 md:mb-8 text-center">
           <h1 className="text-xl font-semibold text-text tracking-tight">
             Mezmur Debter
           </h1>
           <p className="text-sm text-text-faint mt-1">A home for your music</p>
         </div>
 
-        {/* Card */}
-        <div className="bg-surface border border-border rounded-lg p-8">
+        <div className="bg-surface border border-border rounded-lg p-6 md:p-8">
           <h2 className="text-lg font-medium text-text mb-6">Sign in</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -52,7 +53,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-darker-canvas border border-border rounded px-3 py-2 text-white placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
+                className={inputClass}
               />
             </div>
 
@@ -65,7 +66,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full bg-darker-canvas border border-border rounded px-3 py-2 text-white placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
+                className={inputClass}
               />
             </div>
 
@@ -78,7 +79,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 text-text font-medium rounded py-2 transition"
+              className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 text-text font-medium rounded py-2.5 transition"
             >
               {submitting ? "Signing in…" : "Sign in"}
             </button>

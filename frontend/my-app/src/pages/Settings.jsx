@@ -48,7 +48,7 @@ export default function Settings() {
   }
 
   const inputClass =
-    "w-full bg-darker-canvas border border-border rounded px-3 py-2 text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition";
+    "w-full bg-darker-canvas border border-border rounded px-3 py-2.5 text-base md:text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition";
 
   const labelClass =
     "block text-xs uppercase tracking-wider text-text-muted mb-2";
@@ -56,18 +56,16 @@ export default function Settings() {
   return (
     <div className="max-w-5xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-medium text-text">Settings</h1>
+        <h1 className="text-xl md:text-2xl font-medium text-text">Settings</h1>
         <p className="text-sm text-text-muted mt-1">
           Manage your profile and preferences
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column — settings forms */}
         <div className="lg:col-span-2 space-y-6">
           <form onSubmit={handleSave} className="space-y-6">
-            {/* Profile */}
-            <section className="bg-surface border border-border rounded-lg p-6 space-y-4">
+            <section className="bg-surface border border-border rounded-lg p-4 md:p-6 space-y-4">
               <h2 className="text-xs uppercase tracking-wider text-text-muted">
                 Profile
               </h2>
@@ -84,7 +82,7 @@ export default function Settings() {
 
               <div>
                 <label className={labelClass}>Email</label>
-                <div className="flex items-center justify-between gap-3 bg-darker-canvas border border-border rounded px-3 py-2">
+                <div className="flex items-center justify-between gap-3 bg-darker-canvas border border-border rounded px-3 py-2.5">
                   <span className="text-sm text-text truncate">{email}</span>
                   <span className="text-xs text-text-faint shrink-0">
                     Read-only
@@ -93,15 +91,14 @@ export default function Settings() {
               </div>
             </section>
 
-            {/* Preferences */}
-            <section className="bg-surface border border-border rounded-lg p-6">
+            <section className="bg-surface border border-border rounded-lg p-4 md:p-6">
               <h2 className="text-xs uppercase tracking-wider text-text-muted mb-4">
                 Preferences
               </h2>
 
               <div>
                 <label className={labelClass}>Accidentals</label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <button
                     type="button"
                     onClick={() => setAccidental("sharp")}
@@ -145,14 +142,13 @@ export default function Settings() {
             <button
               type="submit"
               disabled={saving}
-              className="bg-accent hover:bg-accent-hover disabled:opacity-50 text-text font-medium rounded px-5 py-2 transition"
+              className="bg-accent hover:bg-accent-hover disabled:opacity-50 text-text font-medium rounded px-5 py-2.5 transition w-full sm:w-auto"
             >
               {saving ? "Saving…" : "Save changes"}
             </button>
           </form>
 
-          {/* Session */}
-          <section className="bg-surface border border-border rounded-lg p-6">
+          <section className="bg-surface border border-border rounded-lg p-4 md:p-6">
             <h2 className="text-xs uppercase tracking-wider text-text-muted mb-3">
               Session
             </h2>
@@ -165,7 +161,6 @@ export default function Settings() {
           </section>
         </div>
 
-        {/* Right column — preview + context */}
         <div className="space-y-6">
           <PreviewCard accidental={accidental} />
           <AccountCard user={user} />
@@ -175,11 +170,9 @@ export default function Settings() {
   );
 }
 
-/* --- Sub-components --- */
-
 function PreviewCard({ accidental }) {
   return (
-    <div className="bg-surface border border-border rounded-lg p-5 sticky top-6">
+    <div className="bg-surface border border-border rounded-lg p-4 md:p-5 lg:sticky lg:top-6">
       <h2 className="text-xs uppercase tracking-wider text-text-muted mb-4">
         Preview
       </h2>
@@ -188,7 +181,6 @@ function PreviewCard({ accidental }) {
         How songs look with this setting:
       </p>
 
-      {/* Sample song row — mimics SongRow from SongList */}
       <div className="bg-darker-canvas border border-border rounded-lg p-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded bg-surface flex items-center justify-center text-text-muted shrink-0 text-sm">
@@ -197,7 +189,7 @@ function PreviewCard({ accidental }) {
 
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-text truncate">ለአብ ለወልድ</p>
-            <div className="flex items-center gap-2 mt-1 text-xs text-text-muted">
+            <div className="flex items-center gap-2 mt-1 text-xs text-text-muted flex-wrap">
               <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-surface text-text-muted">
                 draft
               </span>
@@ -221,15 +213,15 @@ function PreviewCard({ accidental }) {
 }
 
 function AccountCard({ user }) {
-  const joined = user?.created_at
-    ? new Date(user.created_at).toLocaleDateString(undefined, {
+  const joined = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString(undefined, {
         year: "numeric",
         month: "long",
       })
     : null;
 
   return (
-    <div className="bg-surface border border-border rounded-lg p-5">
+    <div className="bg-surface border border-border rounded-lg p-4 md:p-5">
       <h2 className="text-xs uppercase tracking-wider text-text-muted mb-4">
         Account
       </h2>

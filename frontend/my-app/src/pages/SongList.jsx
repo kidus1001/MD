@@ -42,9 +42,11 @@ export default function SongList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-medium text-text">All Songs</h1>
+          <h1 className="text-xl md:text-2xl font-medium text-text">
+            All Songs
+          </h1>
           <p className="text-sm text-text-muted mt-1">
             {loading
               ? "Loading…"
@@ -53,7 +55,7 @@ export default function SongList() {
         </div>
         <Link
           to="/songs/new"
-          className="bg-accent hover:bg-accent-hover text-text text-sm font-medium rounded px-4 py-2 transition"
+          className="bg-accent hover:bg-accent-hover text-text text-sm font-medium rounded px-4 py-2 transition text-center w-full sm:w-auto shrink-0"
         >
           + New Song
         </Link>
@@ -64,7 +66,7 @@ export default function SongList() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search by title or any word in the lyrics…"
-        className="w-full bg-surface border border-border rounded px-4 py-2.5 text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
+        className="w-full bg-surface border border-border rounded px-4 py-2.5 text-base md:text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
       />
 
       {error && (
@@ -74,7 +76,7 @@ export default function SongList() {
       )}
 
       {!loading && !error && songs.length === 0 && (
-        <div className="bg-surface border border-border rounded-lg p-10 text-center">
+        <div className="bg-surface border border-border rounded-lg p-8 md:p-10 text-center">
           <p className="text-sm text-text-muted mb-4">
             {q ? "No songs matched your search." : "No songs yet."}
           </p>
@@ -104,25 +106,25 @@ function SongRow({ song, accidental }) {
   return (
     <Link
       to={`/songs/${song._id}`}
-      className="block bg-surface border border-border rounded-lg p-4 hover:bg-surface-hover transition"
+      className="block bg-surface border border-border rounded-lg p-3 md:p-4 hover:bg-surface-hover transition"
     >
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded bg-darker-canvas flex items-center justify-center text-text-muted shrink-0">
+      <div className="flex items-center gap-3 md:gap-4">
+        <div className="w-9 h-9 md:w-10 md:h-10 rounded bg-darker-canvas flex items-center justify-center text-text-muted shrink-0">
           ♪
         </div>
 
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-text truncate">{song.title}</p>
-          <div className="flex items-center gap-3 mt-1 text-xs text-text-muted">
+          <div className="flex items-center gap-2 md:gap-3 mt-1 text-xs text-text-muted flex-wrap">
             <StatusPill status={song.status} />
-            <span>
+            <span className="truncate">
               {song.scale} · {formatMajor(song.major, accidental)}
             </span>
-            {song.poem_by?.name && <span>· Poem: {song.poem_by.name}</span>}
           </div>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Percent bar — hidden on mobile, shown on desktop */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
           <div className="w-24 h-1.5 bg-darker-canvas rounded-full overflow-hidden">
             <div
               className="h-full bg-text-muted"
@@ -133,6 +135,11 @@ function SongRow({ song, accidental }) {
             {song.percent || 0}%
           </span>
         </div>
+
+        {/* On mobile, just show the number */}
+        <span className="md:hidden text-xs text-text-muted tabular-nums shrink-0">
+          {song.percent || 0}%
+        </span>
       </div>
     </Link>
   );
@@ -150,7 +157,7 @@ function StatusPill({ status }) {
 
   return (
     <span
-      className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded ${
+      className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 ${
         styles[status] || "bg-darker-canvas text-text-muted"
       }`}
     >

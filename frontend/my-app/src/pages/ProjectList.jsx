@@ -28,9 +28,11 @@ export default function ProjectList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-medium text-text">Projects</h1>
+          <h1 className="text-xl md:text-2xl font-medium text-text">
+            Projects
+          </h1>
           <p className="text-sm text-text-muted mt-1">
             {loading
               ? "Loading…"
@@ -39,7 +41,7 @@ export default function ProjectList() {
         </div>
         <Link
           to="/projects/new"
-          className="bg-accent hover:bg-accent-hover text-text text-sm font-medium rounded px-4 py-2 transition"
+          className="bg-accent hover:bg-accent-hover text-text text-sm font-medium rounded px-4 py-2 transition text-center w-full sm:w-auto shrink-0"
         >
           + New Project
         </Link>
@@ -52,7 +54,7 @@ export default function ProjectList() {
       )}
 
       {!loading && !error && projects.length === 0 && (
-        <div className="bg-surface border border-border rounded-lg p-10 text-center">
+        <div className="bg-surface border border-border rounded-lg p-8 md:p-10 text-center">
           <p className="text-sm text-text-muted mb-4">No projects yet.</p>
           <Link
             to="/projects/new"
@@ -85,7 +87,7 @@ function ProjectCard({ project }) {
   return (
     <Link
       to={`/projects/${project._id}`}
-      className="block bg-surface border border-border rounded-lg p-5 hover:bg-surface-hover transition"
+      className="block bg-surface border border-border rounded-lg p-4 md:p-5 hover:bg-surface-hover transition"
     >
       <div className="flex items-start justify-between gap-3 mb-1">
         <h2

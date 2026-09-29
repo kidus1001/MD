@@ -35,9 +35,7 @@ export default function Dashboard() {
     };
   }, []);
 
-  if (loading) {
-    return <p className="text-text-muted">Loading…</p>;
-  }
+  if (loading) return <p className="text-text-muted">Loading…</p>;
 
   if (error) {
     return (
@@ -50,11 +48,11 @@ export default function Dashboard() {
   const hasContent = stats.totalSongs > 0 || stats.totalProjects > 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-medium text-text">
+          <h1 className="text-xl md:text-2xl font-medium text-text">
             Welcome back{user?.name ? `, ${user.name}` : ""}
           </h1>
           <p className="text-sm text-text-muted mt-1">
@@ -63,7 +61,7 @@ export default function Dashboard() {
         </div>
         <Link
           to="/songs/new"
-          className="bg-accent hover:bg-accent-hover text-text text-sm font-medium rounded px-4 py-2 transition shrink-0"
+          className="bg-accent hover:bg-accent-hover text-text text-sm font-medium rounded px-4 py-2 transition text-center sm:text-left w-full sm:w-auto shrink-0"
         >
           + New Song
         </Link>
@@ -74,7 +72,7 @@ export default function Dashboard() {
       ) : (
         <>
           {/* Stat cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             <StatCard label="Songs" value={stats.totalSongs} />
             <StatCard label="Projects" value={stats.totalProjects} />
             <StatCard label="In Progress" value={stats.inProgress} />
@@ -131,11 +129,13 @@ export default function Dashboard() {
 
 function StatCard({ label, value }) {
   return (
-    <div className="bg-surface border border-border rounded-lg p-4">
-      <p className="text-xs uppercase tracking-wider text-text-muted mb-1">
+    <div className="bg-surface border border-border rounded-lg p-3 md:p-4">
+      <p className="text-[10px] md:text-xs uppercase tracking-wider text-text-muted mb-1">
         {label}
       </p>
-      <p className="text-2xl font-medium text-text tabular-nums">{value}</p>
+      <p className="text-xl md:text-2xl font-medium text-text tabular-nums">
+        {value}
+      </p>
     </div>
   );
 }
@@ -164,10 +164,10 @@ function SongRow({ song, accidental }) {
       to={`/songs/${song._id}`}
       className="block bg-surface border border-border rounded-lg p-3 hover:bg-surface-hover transition"
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-text truncate">{song.title}</p>
-          <p className="text-xs text-text-muted mt-0.5">
+          <p className="text-xs text-text-muted mt-0.5 truncate">
             {song.scale} · {formatMajor(song.major, accidental)} ·{" "}
             {timeAgo(song.updated_at)}
           </p>
@@ -233,15 +233,15 @@ function StatusPill({ status }) {
 
 function EmptyState() {
   return (
-    <div className="bg-surface border border-border rounded-lg p-12 text-center">
-      <h2 className="text-lg font-medium text-text mb-2">
+    <div className="bg-surface border border-border rounded-lg p-6 md:p-12 text-center">
+      <h2 className="text-base md:text-lg font-medium text-text mb-2">
         Start your music library
       </h2>
       <p className="text-sm text-text-muted mb-6 max-w-md mx-auto">
         Create a project to organize an album or a collection of songs, or jump
         straight in and write your first song.
       </p>
-      <div className="flex items-center justify-center gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
         <Link
           to="/projects/new"
           className="bg-accent hover:bg-accent-hover text-text text-sm font-medium rounded px-4 py-2 transition"

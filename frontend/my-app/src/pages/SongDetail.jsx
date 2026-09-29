@@ -109,9 +109,11 @@ export default function SongDetail() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-medium text-text">{song.title}</h1>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-xl md:text-2xl font-medium text-text break-words">
+            {song.title}
+          </h1>
           <p className="text-sm text-text-muted mt-1">
             {song.scale} · {formatMajor(song.major, accidental)} · {song.status}
           </p>
@@ -132,14 +134,14 @@ export default function SongDetail() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
         <Meta label="Poem by" person={song.poem_by} />
         <Meta label="Melody by" person={song.melody_by} />
         <Meta label="Sung by" person={song.sung_by} />
       </div>
 
       {song.lyric_body && (
-        <section className="bg-surface border border-border rounded-lg p-6">
+        <section className="bg-surface border border-border rounded-lg p-4 md:p-6">
           <h2 className="text-xs uppercase tracking-wider text-text-muted mb-3">
             Lyrics
           </h2>
@@ -150,7 +152,7 @@ export default function SongDetail() {
       )}
 
       {song.notes && (
-        <section className="bg-surface border border-border rounded-lg p-6">
+        <section className="bg-surface border border-border rounded-lg p-4 md:p-6">
           <h2 className="text-xs uppercase tracking-wider text-text-muted mb-3">
             Notes
           </h2>
@@ -158,7 +160,7 @@ export default function SongDetail() {
         </section>
       )}
 
-      <section className="bg-surface border border-border rounded-lg p-6">
+      <section className="bg-surface border border-border rounded-lg p-4 md:p-6">
         <h2 className="text-xs uppercase tracking-wider text-text-muted mb-4">
           Recordings ({recordings.length}/20)
         </h2>
@@ -203,7 +205,7 @@ export default function SongDetail() {
                   value={recordingTitle}
                   onChange={(e) => setRecordingTitle(e.target.value)}
                   placeholder="e.g. Take 1"
-                  className="w-full bg-darker-canvas border border-border rounded px-3 py-2 text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
+                  className="w-full bg-darker-canvas border border-border rounded px-3 py-2.5 text-base md:text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition"
                 />
               </div>
             </div>
@@ -217,7 +219,7 @@ export default function SongDetail() {
             <button
               type="submit"
               disabled={uploading}
-              className="bg-accent hover:bg-accent-hover disabled:opacity-50 text-text font-medium rounded px-4 py-2 text-sm transition"
+              className="bg-accent hover:bg-accent-hover disabled:opacity-50 text-text font-medium rounded px-4 py-2.5 text-sm transition w-full sm:w-auto"
             >
               {uploading ? "Uploading…" : "Upload recording"}
             </button>
@@ -231,7 +233,6 @@ export default function SongDetail() {
         )}
       </section>
 
-      {/* Dialogs — one each, at the end of the component */}
       <ConfirmDialog
         open={confirmDeleteSong}
         title="Delete this song?"
@@ -279,29 +280,31 @@ function Meta({ label, person }) {
 
 function RecordingRow({ recording, onDelete }) {
   return (
-    <div className="flex items-center gap-3 p-3 bg-darker-canvas border border-border rounded">
-      <div className="text-xs text-text-muted w-8 text-center shrink-0">
-        v{recording.version}
+    <div className="bg-darker-canvas border border-border rounded p-3">
+      <div className="flex items-start gap-3">
+        <div className="text-xs text-text-muted w-8 text-center shrink-0 pt-0.5">
+          v{recording.version}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm text-text truncate">{recording.title}</p>
+          <p className="text-xs text-text-faint mt-0.5">
+            {formatBytes(recording.file_size)} ·{" "}
+            {formatDuration(recording.duration)}
+          </p>
+          <audio
+            controls
+            src={recording.file_url}
+            className="w-full mt-2 h-8"
+            preload="none"
+          />
+        </div>
+        <button
+          onClick={onDelete}
+          className="text-xs text-text-faint hover:text-error transition shrink-0 pt-0.5"
+        >
+          Delete
+        </button>
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm text-text truncate">{recording.title}</p>
-        <p className="text-xs text-text-faint mt-0.5">
-          {formatBytes(recording.file_size)} ·{" "}
-          {formatDuration(recording.duration)}
-        </p>
-      </div>
-      <audio
-        controls
-        src={recording.file_url}
-        className="h-8 max-w-[220px]"
-        preload="none"
-      />
-      <button
-        onClick={onDelete}
-        className="text-xs text-text-faint hover:text-error transition shrink-0"
-      >
-        Delete
-      </button>
     </div>
   );
 }

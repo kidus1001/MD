@@ -64,19 +64,19 @@ export default function ProjectForm() {
   if (loading) return <p className="text-text-muted">Loading…</p>;
 
   const inputClass =
-    "w-full bg-darker-canvas border border-border rounded px-3 py-2 text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition";
+    "w-full bg-darker-canvas border border-border rounded px-3 py-2.5 text-base md:text-sm text-text placeholder:text-text-faint focus:outline-none focus:border-border-strong transition";
 
   const labelClass =
     "block text-xs uppercase tracking-wider text-text-muted mb-2";
 
   return (
     <div className="max-w-2xl space-y-6">
-      <h1 className="text-2xl font-medium text-text">
+      <h1 className="text-xl md:text-2xl font-medium text-text">
         {isEdit ? "Edit project" : "New project"}
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <section className="bg-surface border border-border rounded-lg p-6 space-y-4">
+        <section className="bg-surface border border-border rounded-lg p-4 md:p-6 space-y-4">
           <div>
             <label className={labelClass}>Title</label>
             <input
@@ -122,18 +122,18 @@ export default function ProjectForm() {
           </div>
         )}
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
           <button
             type="submit"
             disabled={saving}
-            className="bg-accent hover:bg-accent-hover disabled:opacity-50 text-text font-medium rounded px-5 py-2 transition"
+            className="bg-accent hover:bg-accent-hover disabled:opacity-50 text-text font-medium rounded px-5 py-2.5 transition"
           >
             {saving ? "Saving…" : isEdit ? "Save changes" : "Create project"}
           </button>
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="text-sm text-text-muted hover:text-text px-4 py-2 transition"
+            className="text-sm text-text-muted hover:text-text px-4 py-2.5 transition"
           >
             Cancel
           </button>
