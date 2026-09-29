@@ -37,7 +37,9 @@ export default function Login() {
           <h1 className="text-xl font-semibold text-text tracking-tight">
             Mezmur Debter
           </h1>
-          <p className="text-sm text-text-faint mt-1">A home for your hymns</p>
+          <p className="text-sm text-text-faint mt-1">
+            A home for your hymns / musics
+          </p>
         </div>
 
         <div className="bg-surface border border-border rounded-lg p-6 md:p-8">
